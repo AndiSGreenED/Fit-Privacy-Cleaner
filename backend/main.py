@@ -20,5 +20,3 @@ async def analyze_fit(file: UploadFile = File(...)):
         "size_bytes": len(content),
         "uploaded": True
     }
-
-    return result
