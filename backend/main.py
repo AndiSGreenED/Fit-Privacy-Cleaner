@@ -15,7 +15,10 @@ def root():
 async def analyze_fit(file: UploadFile = File(...)):
     content = await file.read()
 
-    return {
+    result = {
         "filename": file.filename,
-        "size_bytes": len(content)
+        "size_bytes": len(content),
+        "uploaded": True
     }
+
+    return result
