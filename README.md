@@ -2,6 +2,14 @@
 
 Eine Webanwendung zum Prüfen und gezielten Anonymisieren von Garmin FIT Aktivitätsdateien.
 
+## Website
+
+Nach Aktivierung von GitHub Pages ist die Website erreichbar unter:
+
+https://andisgreened.github.io/Fit-Privacy-Cleaner/
+
+Die Oberfläche ist für Desktop und Mobilgeräte gestaltet. Sie unterstützt Dateiauswahl, Drag and Drop, Analyse, gezielte Bereinigung und Download.
+
 ## Funktionen
 
 - Echtes Lesen der FIT Nachrichten und Felder statt pauschaler Annahmen.
@@ -20,15 +28,26 @@ Standardmäßig werden Geräte und Profildaten entfernt. GPS bleibt zunächst er
 
 Auch nach der Bereinigung kann eine Aktivität durch Zeitpunkt, Streckenverlauf, Leistungswerte oder andere ungewöhnliche Merkmale wiedererkennbar sein. Der Cleaner verspricht deshalb keine vollständige Anonymität. Die Originaldatei wird nicht verändert.
 
-## Technik
+## Architektur
 
-- .NET 10 ASP.NET Core
-- Garmin FIT C# SDK über NuGet (Garmin.FIT.Sdk 21.222.0)
-- Statische Oberfläche ohne JavaScript Framework
-- FIT Verarbeitung im Arbeitsspeicher
-- Uploadlimit: 50 MB
+- Website: GitHub Pages aus dem Ordner `frontend`.
+- API: Cloudflare Worker `fit-privacy-cleaner-api`.
+- Verarbeitung: .NET 10 ASP.NET Core in einem Cloudflare Container.
+- FIT Bibliothek: Garmin FIT C# SDK 21.222.0.
+- Uploadlimit: 50 MB.
+- FIT Verarbeitung im Arbeitsspeicher.
 
-Das Garmin FIT SDK unterstützt das Dekodieren und Kodieren von FIT Dateien. Die Python Variante des SDK unterstützt dagegen nur das Dekodieren. Deshalb verwendet diese Anwendung die C# Variante.
+Die Website und die API sind getrennt. GitHub Pages stellt nur die statische Oberfläche bereit. Die FIT Verarbeitung erfolgt im .NET Backend.
+
+## Cloudflare API bereitstellen
+
+Die einmalige Verbindung von GitHub zu Cloudflare Workers Builds ist in [DEPLOYMENT.md](DEPLOYMENT.md) beschrieben. Nach der Verbindung baut und veröffentlicht Cloudflare den Container bei Änderungen auf `main`.
+
+Die Website verwendet als API Adresse:
+
+`https://fit-privacy-cleaner-api.andigreen.workers.dev`
+
+Diese Adresse muss nach dem ersten Cloudflare Deployment unter `/api/health` erreichbar sein.
 
 ## Lokal starten
 
@@ -46,7 +65,7 @@ Die von ASP.NET Core angezeigte lokale Adresse im Browser öffnen.
 Im Repository Stammverzeichnis:
 
 ~~~powershell
-docker build -f backend/Dockerfile -t fit-privacy-cleaner .
+docker build -t fit-privacy-cleaner .
 docker run --rm -p 8080:8080 fit-privacy-cleaner
 ~~~
 
@@ -60,13 +79,9 @@ Danach http://localhost:8080 öffnen.
 
 Die beiden Bereinigungsoptionen werden als true oder false übertragen. Das Ergebnis von POST /api/anonymize ist eine FIT Datei als Download.
 
-## Betrieb im Internet
-
-Für einen öffentlichen Betrieb müssen HTTPS, Upload Rate Limits, Schutz vor automatisiertem Missbrauch und geeignete Server Ressourcen zusätzlich eingerichtet werden. Die Anwendung enthält bewusst keine Benutzerkonten und keine dauerhafte Dateiablage. Das allein ersetzt keine Sicherheitsprüfung der Hostingumgebung.
-
 ## Prüfung
 
-GitHub Actions baut das .NET Projekt bei Pushes auf main und codex/** sowie bei Pull Requests und führt einen FIT Rundlauftest mit Prüfsummenprüfung aus. Für eine fachliche Validierung müssen zusätzlich echte FIT Testdateien aus verschiedenen Geräten und Sportarten verarbeitet und die Ergebnisse in Garmin Connect oder einem anderen FIT kompatiblen Werkzeug geprüft werden.
+GitHub Actions baut das .NET Projekt bei Pushes auf main und codex/** sowie bei Pull Requests und führt einen FIT Rundlauftest mit Prüfsummenprüfung aus. Für eine fachliche Freigabe müssen zusätzlich echte FIT Dateien unterschiedlicher Geräte und Sportarten mit der Anwendung bereinigt und die Ergebnisse in Garmin Connect oder einem anderen FIT kompatiblen Werkzeug geprüft werden.
 
 ## Garmin FIT SDK
 
