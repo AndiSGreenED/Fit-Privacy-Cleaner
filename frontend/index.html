@@ -177,7 +177,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
       </div>
       <div id="contributePanel" class="contribute" hidden>
         <h3>FIT zur Weiterentwicklung beitragen</h3>
-        <p>Nach erfolgreicher Bereinigung kannst du die bereinigte Datei freiwillig an die SurfsApp Entwicklung senden. Sie wird privat gespeichert und ist nur für den Betreiber sichtbar. GPS Daten bleiben enthalten, sofern du sie beim Bereinigen nicht entfernt hast.</p>
+        <p>Nach erfolgreicher Bereinigung kannst du die bereinigte Datei bis 2 MB freiwillig an die SurfsApp Entwicklung senden. Sie wird privat gespeichert und ist nur für den Betreiber sichtbar. GPS Daten bleiben enthalten, sofern du sie beim Bereinigen nicht entfernt hast.</p>
         <div class="contribute-fields">
           <label for="donateSport">Sportart
             <select id="donateSport"><option>Windsurfen</option><option>Wingen</option><option>Surfen</option><option>Sonstiges</option></select>
@@ -429,6 +429,12 @@ document.getElementById("donateConsent").addEventListener("change", function() {
 });
 document.getElementById("sendFitButton").addEventListener("click", async function() {
   if (!cleanedBlob || !document.getElementById("donateConsent").checked) return;
+  if (cleanedBlob.size > 2 * 1024 * 1024) {
+    const status = document.getElementById("sendStatus");
+    status.textContent = "Die bereinigte Datei ist größer als 2 MB und kann nicht eingesendet werden.";
+    status.className = "status error";
+    return;
+  }
   const button = this;
   const status = document.getElementById("sendStatus");
   button.disabled = true;
