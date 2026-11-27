@@ -8,7 +8,7 @@ const { chromium } = require("playwright");
 
   try {
     browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
-    page = await browser.newPage({ acceptDownloads: true });
+    page = await browser.newPage({ acceptDownloads: true, locale: "de-DE" });
 
     page.on("pageerror", error => {
       console.error("[browser page error]", error.message);
@@ -41,7 +41,21 @@ const { chromium } = require("playwright");
 
     const runtimeStatus = await page.locator("#runtimeStatus").textContent();
     console.log("Runtime status:", runtimeStatus);
-    assert.match(runtimeStatus, /FIT Prozessor bereit/, "Blazor runtime or JS interop did not initialize.");
+    assert.match(runtimeStatus, /FIT Prozessor bereit/, "German FIT processor did not initialize.");
+
+    await Promise.all([
+      page.waitForURL(/index\\.en\\.html/),
+      page.locator('.language-switch a[href$="index.en.html"]').click()
+    ]);
+    await page.waitForFunction(() => {
+      const element = document.getElementById("runtimeStatus");
+      return document.documentElement.lang === "en" &&
+        element && element.classList.contains("success");
+    }, null, { timeout: 60000 });
+
+    const englishRuntimeStatus = await page.locator("#runtimeStatus").textContent();
+    assert.match(englishRuntimeStatus, /FIT processor ready/, "English FIT processor did not initialize.");
+    assert.equal(await page.locator("#upload-title").textContent(), "Select FIT file", "English interface did not load.");
 
     const version = await page.locator("#appVersion").textContent();
     const build = await page.locator("#appBuild").textContent();
@@ -76,10 +90,12 @@ const { chromium } = require("playwright");
 
     const analyzeStatus = await page.locator("#status").textContent();
     console.log("Analyze status:", analyzeStatus);
-    assert.match(analyzeStatus, /Analyse erfolgreich/, "Browser FIT analysis failed.");
+    assert.match(analyzeStatus, /Analysis successful/, "Browser FIT analysis failed.");
 
     const statistics = await page.locator("#stats .stat strong").allTextContents();
+    const statisticLabels = await page.locator("#stats .stat span").allTextContents();
     assert.equal(statistics[0], "1", "Expected one FIT record in browser analysis.");
+    assert.equal(statisticLabels[0], "Records", "FIT analysis labels were not translated to English.");
     console.log("FIT analysis result:", statistics.join(", "));
 
     const downloadPromise = page.waitForEvent("download", { timeout: 30000 });
