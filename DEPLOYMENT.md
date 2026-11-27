@@ -1,47 +1,40 @@
-# Deployment
+# Veröffentlichung des FIT Privacy Cleaners
 
-## 1. GitHub Pages Website
+## Website und FIT Verarbeitung
 
-The GitHub Actions workflow `.github/workflows/pages.yml` publishes the `frontend` directory.
+Die Website wird über GitHub Pages veröffentlicht. Das GitHub Actions Workflow baut zusätzlich den Browser Prozessor mit .NET WebAssembly und kopiert dessen Laufzeitdateien in die Veröffentlichung.
 
-In the repository settings, open **Pages** and set **Build and deployment** to **GitHub Actions** if it is not already selected.
+Einmalig in den Repository Einstellungen unter **Settings → Pages** als Quelle **GitHub Actions** auswählen.
 
-The website URL is:
+Die Website lautet:
 
 https://andisgreened.github.io/Fit-Privacy-Cleaner/
 
-## 2. Cloudflare API
+Nach jeder Änderung an `frontend`, `browser` oder `backend/FitFileProcessor.cs` baut GitHub Actions den Browser Prozessor und veröffentlicht die Website automatisch.
 
-Cloudflare Containers require the Workers Paid plan. It currently starts at 5 USD per month, with usage based charges beyond the included monthly allowances. The backend uses the basic container size with 1 GiB RAM so larger FIT uploads have sufficient memory. Check the current pricing before activating the service.
+## Datenverarbeitung
 
-The API runs in a .NET 10 container behind a Cloudflare Worker. The Worker configuration is in `wrangler.jsonc`, the request router is in `src/index.js`, and the container build is in the root `Dockerfile`.
+Analyse und Bereinigung erfolgen lokal im Browser mit dem offiziellen Garmin FIT SDK für .NET. Es ist dafür kein API Server und kein Cloudflare Workers Paid Tarif erforderlich. Die FIT Datei wird für Analyse und Bereinigung nicht an einen Server übertragen.
 
-In Cloudflare:
+Erst wenn ein Nutzer nach erfolgreicher Bereinigung ausdrücklich „Bereinigte FIT Datei senden“ auswählt und der Übermittlung zustimmt, wird die bereinigte Ausgabedatei an den bestehenden SurfsApp Worker übertragen.
 
-1. Open **Workers & Pages**.
-2. Create a Worker or choose **Connect to Git** for a new Worker.
-3. Select the GitHub repository `AndiSGreenED/Fit-Privacy-Cleaner`.
-4. Set the production branch to `main`.
-5. Set the root directory to the repository root.
-6. Use the normal dependency installation command `npm install`.
-7. Set the deploy command to `npx wrangler deploy`.
-8. Save and deploy.
+Der Upload verwendet:
 
-The Cloudflare Workers Builds GitHub App must be installed for this repository. If the repository is missing, extend that GitHub App installation to include `Fit-Privacy-Cleaner`.
+`https://garmin-abruf.andigreen.workers.dev/api/fit-submissions`
 
-The Worker name in `wrangler.jsonc` is `fit-privacy-cleaner-api`. With the existing account subdomain `andigreen`, the expected API origin is:
+Maximale Dateigröße für Einsendungen: 2 MB. Die Datei wird im vorhandenen SurfsApp D1 Speicher abgelegt und ist ausschließlich im Betreiberbereich der SurfsApp Web App abrufbar.
 
-https://fit-privacy-cleaner-api.andigreen.workers.dev
+## Build und Tests
 
-After deployment, verify:
+GitHub Actions führt folgende Prüfungen aus:
 
-- Open `/api/health` and confirm a JSON response with `status: ok`.
-- Load the GitHub Pages website.
-- Analyze and clean a real FIT file.
-- Confirm the cleaned file opens in Garmin Connect or another FIT compatible tool.
+1. Build des vorhandenen .NET Backend Projekts.
+2. FIT Bereinigungstests mit erzeugten Testdateien.
+3. Build des .NET WebAssembly Prozessors.
+4. Veröffentlichung der statischen Website über GitHub Pages.
 
-## 3. Security and production validation
+Das Backend Projekt bleibt für lokale Entwicklung und Tests im Repository. Für den veröffentlichten Cleaner wird es nicht als Server betrieben.
 
-The API allows browser requests only from the SurfsApp GitHub Pages origin and local development origins. FIT uploads are processed in memory and are not written to an application database.
+## Noch erforderliche Live Prüfung
 
-Automated tests use generated FIT data. They do not replace end to end testing with real activities from different Garmin devices and sports.
+Nach erfolgreichem GitHub Pages Deployment eine echte FIT Datei analysieren und bereinigen. Anschließend eine bereinigte Datei freiwillig einsenden und in der SurfsApp Web App unter „Entwicklung“ herunterladen. Zusätzlich mit einem normalen SurfsApp Nutzer prüfen, dass die Einsendungsliste und die Dateien nicht erreichbar sind.
