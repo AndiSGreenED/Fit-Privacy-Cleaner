@@ -187,6 +187,12 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
           <label for="donateComment">Kommentar, zum Beispiel gesuchtes Manöver
             <textarea id="donateComment" rows="2" maxlength="1000" placeholder="Zum Beispiel: Pushloop, Backloop oder spezielle Halsen"></textarea>
           </label>
+          <label for="donateGithub">GitHub Benutzername (optional)
+            <input id="donateGithub" type="text" maxlength="39" autocomplete="username" placeholder="githubname">
+          </label>
+          <label for="donateContact">Kontakt E Mail (optional)
+            <input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com">
+          </label>
         </div>
         <label class="contribute-consent"><input type="checkbox" id="donateConsent"> Ich möchte diese bereinigte FIT Datei freiwillig übermitteln. Mir ist bewusst, dass GPS Daten enthalten sein können, wenn ich sie nicht entfernt habe.</label>
         <div class="action-row"><button id="sendFitButton" class="secondary" type="button" disabled>Bereinigte FIT Datei senden</button><span id="sendStatus" class="status" role="status" aria-live="polite"></span></div>
@@ -592,6 +598,8 @@ document.getElementById("sendFitButton").addEventListener("click", async functio
     form.append("cleaned", "true");
     form.append("sport", document.getElementById("donateSport").value);
     form.append("comment", document.getElementById("donateComment").value.trim());
+    form.append("github_name", document.getElementById("donateGithub").value.trim());
+    form.append("contact", document.getElementById("donateContact").value.trim());
     form.append("website", document.getElementById("donateWebsite").value);
     const response = await fetch(FIT_SUBMISSION_API, { method: "POST", body: form });
     const result = await response.json().catch(function() { return {}; });
