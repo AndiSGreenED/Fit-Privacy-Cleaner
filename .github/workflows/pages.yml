@@ -8,6 +8,8 @@ on:
       - "frontend/**"
       - "browser/**"
       - "backend/FitFileProcessor.cs"
+      - "tests/**"
+      - "VERSION"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -25,7 +27,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,6 +35,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+      - name: Restore FIT smoke tests
+        run: dotnet restore tests/FitPrivacyCleaner.SmokeTests.csproj
+      - name: Generate browser FIT fixture
+        env:
+          FIT_TEST_OUTPUT_PATH: artifacts/smoke.fit
+        run: |
+          mkdir -p artifacts
+          dotnet run --project tests/FitPrivacyCleaner.SmokeTests.csproj --configuration Release
       - name: Restore browser FIT processor
         run: dotnet restore browser/FitPrivacyCleaner.Browser.csproj
       - name: Publish browser FIT processor
@@ -53,6 +63,36 @@ jobs:
             "builtAt": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           }
           EOF
+      - name: Prepare local browser test site
+        run: |
+          mkdir -p artifacts/testhost/Fit-Privacy-Cleaner
+          cp -a artifacts/publish/wwwroot/. artifacts/testhost/Fit-Privacy-Cleaner/
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Run full browser smoke test
+        run: |
+          set -e
+          python3 -m http.server 4173 --directory artifacts/testhost > artifacts/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/Fit-Privacy-Cleaner/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          FIT_TEST_FIXTURE="$GITHUB_WORKSPACE/artifacts/smoke.fit" node tests/browser-smoke.cjs
+      - name: Upload browser test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fit-cleaner-browser-test
+          path: |
+            artifacts/browser-smoke-failure.png
+            artifacts/http.log
+          if-no-files-found: ignore
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload website

@@ -51,6 +51,14 @@ static byte[] CreateTestActivity()
 }
 
 var original = CreateTestActivity();
+var fixtureOutputPath = Environment.GetEnvironmentVariable("FIT_TEST_OUTPUT_PATH");
+if (!string.IsNullOrWhiteSpace(fixtureOutputPath))
+{
+    var fullFixturePath = Path.GetFullPath(fixtureOutputPath);
+    Directory.CreateDirectory(Path.GetDirectoryName(fullFixturePath)!);
+    File.WriteAllBytes(fullFixturePath, original);
+}
+
 var originalAnalysis = FitFileProcessor.Analyze(original);
 
 Require(originalAnalysis.RecordCount == 1, "Expected one record in generated activity.");
