@@ -15,153 +15,141 @@
 body{
     margin:0;
     min-height:100vh;
-    font-family:'Segoe UI',sans-serif;
-
-    background:
-    radial-gradient(circle at top right,#4fd1d9,#0f4961);
-
     display:flex;
     justify-content:center;
     align-items:center;
     padding:30px;
+
+    font-family:Segoe UI,sans-serif;
+
+    background:
+    linear-gradient(
+    135deg,
+    #0f4961,
+    #2ec4c6
+    );
 }
 
 .card{
-    background:white;
+
     width:100%;
     max-width:1000px;
 
-    border-radius:28px;
+    background:white;
+
+    border-radius:25px;
 
     padding:40px;
 
     box-shadow:
-    0 20px 80px rgba(0,0,0,.25);
-}
-
-.logo{
-    height:120px;
-    display:block;
-    margin:auto;
+    0 20px 60px rgba(0,0,0,.2);
 }
 
 h1{
+
     text-align:center;
+
     color:#0f4961;
-    margin-bottom:10px;
 }
 
 .subtitle{
+
     text-align:center;
+
     color:#64748b;
-    margin-bottom:35px;
+
+    margin-bottom:30px;
 }
 
 .dropzone{
 
     border:4px dashed #2ec4c6;
 
-    border-radius:25px;
+    border-radius:20px;
 
     min-height:240px;
 
     display:flex;
+
     flex-direction:column;
 
     justify-content:center;
+
     align-items:center;
 
     cursor:pointer;
 
-    transition:.25s;
-
-    background:#f6ffff;
+    background:#f8ffff;
 }
 
 .dropzone:hover{
 
-    transform:translateY(-3px);
-
-    background:#ebffff;
-}
-
-.drag{
-    background:#cffafe;
-}
-
-.big{
-
-    font-size:70px;
+    background:#ecfeff;
 }
 
 .info{
 
-    margin-top:25px;
+    margin-top:20px;
 
-    padding:20px;
+    padding:15px;
 
-    border-radius:15px;
+    border-radius:12px;
 
     background:#f8fafc;
 }
 
 .button{
 
-    background:#0f766e;
+    width:100%;
+
+    margin-top:20px;
 
     border:none;
 
-    padding:16px 40px;
+    border-radius:12px;
 
-    border-radius:15px;
+    padding:15px;
 
     color:white;
 
-    font-size:16px;
+    background:#0f766e;
 
     cursor:pointer;
 
-    margin-top:25px;
-
-    display:block;
-
-    width:100%;
-}
-
-.button:hover{
-    background:#115e59;
+    font-size:16px;
 }
 
 .button:disabled{
 
     background:#94a3b8;
+
     cursor:not-allowed;
 }
 
 .result{
 
-    margin-top:25px;
+    margin-top:20px;
 
     padding:20px;
 
-    border-radius:14px;
-
     background:#f0fdf4;
+
+    border-radius:12px;
 }
 
 .badge{
 
     display:inline-block;
 
-    background:#ccfbf1;
-
-    color:#0f766e;
+    margin:5px;
 
     padding:8px 12px;
 
     border-radius:20px;
 
-    margin:5px;
+    background:#ccfbf1;
+
+    color:#0f766e;
 }
 </style>
 </head>
@@ -170,9 +158,7 @@ h1{
 
 <div class="card">
 
-<img src="SurfsApp_Symbol_1.png" class="logo">
-
-<h1>Fit Privacy Cleaner</h1>
+<h1>🏄 Fit Privacy Cleaner</h1>
 
 <div class="subtitle">
 Share your FIT files, not your private data.
@@ -180,11 +166,9 @@ Share your FIT files, not your private data.
 
 <div id="dropzone" class="dropzone">
 
-<div class="big">🏄</div>
-
 <h2>FIT-Datei hier ablegen</h2>
 
-<p>oder zum Auswählen klicken</p>
+<p>oder klicken zum Auswählen</p>
 
 </div>
 
@@ -200,10 +184,11 @@ Noch keine Datei ausgewählt.
 
 <button
 id="analyzeBtn"
-disabled
-class="button">
+class="button"
+disabled>
 
 Analyse starten
+
 </button>
 
 <div id="result"></div>
@@ -236,116 +221,95 @@ fileInput.addEventListener(
 showFile
 );
 
-dropzone.addEventListener(
-"dragover",
-(e)=>{
-e.preventDefault();
-dropzone.classList.add("drag");
-}
-);
-
-dropzone.addEventListener(
-"dragleave",
-()=>{
-dropzone.classList.remove("drag");
-}
-);
-
-dropzone.addEventListener(
-"drop",
-(e)=>{
-
-e.preventDefault();
-
-dropzone.classList.remove("drag");
-
-if(e.dataTransfer.files.length){
-
-fileInput.files =
-e.dataTransfer.files;
-
-showFile();
-}
-}
-);
-
 function showFile(){
 
-const file =
-fileInput.files[0];
+    const file =
+    fileInput.files[0];
 
-if(!file) return;
+    if(!file) return;
 
-info.innerHTML = `
-<b>Datei:</b>
-${file.name}
-<br>
-<b>Größe:</b>
-${(file.size / 1024).toFixed(1)} KB
-`;
+    info.innerHTML =
+    `<b>${file.name}</b><br>
+    ${(file.size / 1024).toFixed(1)} KB`;
 
-analyzeBtn.disabled = false;
+    analyzeBtn.disabled = false;
 }
 
 analyzeBtn.addEventListener(
 "click",
 async ()=>{
 
-const file =
-fileInput.files[0];
+    const file =
+    fileInput.files[0];
 
-if(!file) return;
+    const formData =
+    new FormData();
 
-const formData =
-new FormData();
+    formData.append(
+        "file",
+        file
+    );
 
-formData.append(
-"file",
-file
-);
+    try{
 
-result.innerHTML =
-"Analysiere...";
+        const response =
+        await fetch(
+        "http://localhost:8000/analyze",
+        {
+            method:"POST",
+            body:formData
+        });
 
-try{
+        const data =
+        await response.json();
 
-const response =
-await fetch(
-"http://127.0.0.1:8000/analyze",
-{
-method:"POST",
-body:formData
-});
+        result.innerHTML = `
+        <div class="result">
 
-const data =
-await response.json();
+            <h3>Analyse</h3>
 
-result.innerHTML = `
-<div class="result">
+            <div class="badge">
+            📄 ${data.filename}
+            </div>
 
-<h3>Analyse erfolgreich</h3>
+            <div class="badge">
+            📦 ${data.size_bytes}
+            </div>
 
-<div class="badge">
-📄 ${data.filename}
-</div>
+            <br><br>
 
-<div class="badge">
-📦 ${data.size_bytes} Bytes
-</div>
+            <div class="badge">
+            ${data.gps ? "✅ GPS" : "❌ GPS"}
+            </div>
 
-</div>
-`;
+            <div class="badge">
+            ${data.heart_rate ? "✅ Herzfrequenz" : "❌ Herzfrequenz"}
+            </div>
 
-}
-catch(err){
+            <div class="badge">
+            ${data.power ? "✅ Leistung" : "❌ Leistung"}
+            </div>
 
-result.innerHTML =
-`
-<div class="result">
-❌ Backend nicht erreichbar
-</div>
-`;
-}
+            <div class="badge">
+            ${data.cadence ? "✅ Kadenz" : "❌ Kadenz"}
+            </div>
+
+            <div class="badge">
+            ${data.device_info ? "✅ Geräteinfos" : "❌ Geräteinfos"}
+            </div>
+
+        </div>
+        `;
+
+    }
+    catch(err){
+
+        result.innerHTML = `
+        <div class="result">
+        ❌ Backend nicht erreichbar
+        </div>
+        `;
+    }
 
 });
 </script>
