@@ -186,10 +186,10 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
             <select id="donateSport"><option value="Windsurfen">Windsurfing</option><option value="Wingen">Wing foiling</option><option value="Surfen">Surfing</option><option value="Sonstiges">Other</option></select>
           </label>
           <label for="donateComment">Comment, for example the manoeuvre you are looking for
-            <textarea id="donateComment" rows="2" maxlength="1000" placeholder="Zum Beispiel: Pushloop, Backloop oder spezielle Halsen"></textarea>
+            <textarea id="donateComment" rows="2" maxlength="1000" placeholder="For example: pushloop, backloop or a specific jibe"></textarea>
           </label>
           <label for="donateName">Name (optional)
-            <input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Dein Name">
+            <input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
           </label>
           <label for="donateContact">Email address (optional)
             <input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com">
@@ -589,8 +589,8 @@ cleanButton.addEventListener("click", async function() {
     const identifiers = Number(response.headers.get("X-Removed-Identifier-Fields") || 0);
     const metadata = Number(response.headers.get("X-Removed-Metadata-Messages") || 0);
     const developer = Number(response.headers.get("X-Removed-Developer-Fields") || 0);
-    const summary = "Removed: " + gps + ", " + identifiers +
-      ", " + metadata + ", " +
+    const summary = "Removed: " + gps + " GPS fields, " + identifiers +
+      " identifier fields, " + metadata + " metadata messages and " +
       developer + " developer fields. Download started.";
     setStatus(summary, "success");
   } catch (error) {
