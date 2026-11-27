@@ -27,3 +27,6 @@ jobs:
 
       - name: Build
         run: dotnet build backend/FitPrivacyCleaner.csproj --configuration Release --no-restore
+
+      - name: Run FIT cleaning smoke tests
+        run: dotnet run --project tests/FitPrivacyCleaner.SmokeTests.csproj --configuration Release
