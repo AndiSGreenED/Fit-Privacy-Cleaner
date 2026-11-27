@@ -187,8 +187,8 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
           <label for="donateComment">Kommentar, zum Beispiel gesuchtes Manöver
             <textarea id="donateComment" rows="2" maxlength="1000" placeholder="Zum Beispiel: Pushloop, Backloop oder spezielle Halsen"></textarea>
           </label>
-          <label for="donateGithub">GitHub Benutzername (optional)
-            <input id="donateGithub" type="text" maxlength="39" autocomplete="username" placeholder="githubname">
+          <label for="donateName">Name (optional)
+            <input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Dein Name">
           </label>
           <label for="donateContact">Kontakt E Mail (optional)
             <input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com">
@@ -236,6 +236,22 @@ const appVersionElement = document.getElementById("appVersion");
 const appBuildElement = document.getElementById("appBuild");
 
 const FIT_SUBMISSION_API = "https://garmin-abruf.andigreen.workers.dev/api/fit-submissions";
+let dotNetInterop = null;
+window.fitCleanerInterop = {
+  instance: null,
+  waiter: null,
+  set: function(instance) {
+    this.instance = instance;
+    if (this.waiter) {
+      this.waiter(instance);
+      this.waiter = null;
+    }
+  },
+  wait: function() {
+    if (this.instance) return Promise.resolve(this.instance);
+    return new Promise(resolve => { this.waiter = resolve; });
+  }
+};
 let selectedFile = null;
 let analysisComplete = false;
 let cleanedBlob = null;
@@ -280,8 +296,11 @@ async function invokeDotNet(methodName, args, timeoutMs, timeoutMessage) {
   if (!window.DotNet || typeof window.DotNet.invokeMethodAsync !== "function") {
     throw new Error("Die .NET JavaScript Schnittstelle wurde nicht initialisiert.");
   }
+  if (!dotNetInterop || typeof dotNetInterop.invokeMethodAsync !== "function") {
+    throw new Error("Der FIT Prozessor ist noch nicht verbunden.");
+  }
   return withTimeout(
-    window.DotNet.invokeMethodAsync("FitPrivacyCleaner.Browser", methodName, ...args),
+    dotNetInterop.invokeMethodAsync(methodName, ...args),
     timeoutMs,
     timeoutMessage
   );
@@ -301,6 +320,11 @@ async function startFitRuntime() {
       "Zeitüberschreitung beim Start der WebAssembly Laufzeit nach 30 Sekunden."
     );
 
+    dotNetInterop = await withTimeout(
+      window.fitCleanerInterop.wait(),
+      15000,
+      "Die FIT Prozessor Komponente wurde nicht initialisiert."
+    );
     const ping = await invokeDotNet(
       "Ping",
       [],
@@ -598,7 +622,7 @@ document.getElementById("sendFitButton").addEventListener("click", async functio
     form.append("cleaned", "true");
     form.append("sport", document.getElementById("donateSport").value);
     form.append("comment", document.getElementById("donateComment").value.trim());
-    form.append("github_name", document.getElementById("donateGithub").value.trim());
+    form.append("name", document.getElementById("donateName").value.trim());
     form.append("contact", document.getElementById("donateContact").value.trim());
     form.append("website", document.getElementById("donateWebsite").value);
     const response = await fetch(FIT_SUBMISSION_API, { method: "POST", body: form });
