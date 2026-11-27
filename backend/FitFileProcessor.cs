@@ -31,16 +31,24 @@ public sealed record CleanResult(
     int OriginalMessageCount,
     int OutputMessageCount);
 
-public sealed class FitFileException(string message) : Exception(message) { }
+public sealed class FitFileException(string message) : Exception(message);
 
 public static class FitFileProcessor
 {
-    private static readonly HashSet<string> MetadataMessages =
+    // Developer values are always removed because their meaning is defined by
+    // third party applications and cannot be reliably classified as harmless.
+    // Their schema messages must therefore always be removed as well.
+    private static readonly HashSet<string> DeveloperMetadataMessages =
+    [
+        "developerdataid",
+        "fielddescription"
+    ];
+
+    private static readonly HashSet<string> DeviceAndProfileMessages =
     [
         "deviceinfo",
         "userprofile",
-        "developerdataid",
-        "fielddescription"
+        "filecreator"
     ];
 
     private static readonly HashSet<string> IdentifierFields =
@@ -98,27 +106,29 @@ public static class FitFileProcessor
         foreach (var source in sourceMessages)
         {
             var messageName = Normalize(source.Name);
+            var isDeveloperMetadata = DeveloperMetadataMessages.Contains(messageName);
+            var isDeviceOrProfileMetadata = DeviceAndProfileMessages.Contains(messageName);
 
-            if (options.RemoveDeviceAndProfileData && MetadataMessages.Contains(messageName))
+            if (isDeveloperMetadata || (options.RemoveDeviceAndProfileData && isDeviceOrProfileMetadata))
             {
                 removedMetadataMessages++;
                 removedDeveloperFields += source.DeveloperFields.Count();
                 continue;
             }
 
-            // Rebuild each message with native fields only. Developer fields are
-            // application-defined and cannot be classified reliably as non-personal.
             var target = new Mesg(source.Name, source.Num)
             {
                 LocalNum = source.LocalNum
             };
 
+            // Only native FIT fields are copied. Developer fields are deliberately
+            // omitted because arbitrary extension data may contain personal values.
             removedDeveloperFields += source.DeveloperFields.Count();
 
             foreach (var field in source.Fields)
             {
-                // Component-expanded fields are derived values. They must not be
-                // written back as independent fields during re-encoding.
+                // Component-expanded values are calculated by the decoder and must
+                // not be written as separate native fields.
                 if (field.IsExpandedField)
                 {
                     continue;
@@ -145,9 +155,6 @@ public static class FitFileProcessor
         EnsureFileIdFirst(cleanedMessages);
 
         var encodedBytes = EncodeMessages(cleanedMessages);
-
-        // Decode the output again. Garmin's decoder validates the FIT header,
-        // message structure and file CRC while reading.
         var verifiedMessages = DecodeMessages(encodedBytes);
         EnsureFileIdFirst(verifiedMessages);
 
@@ -157,8 +164,13 @@ public static class FitFileProcessor
             throw new FitFileException("Die GPS Koordinaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
         }
 
+        if (verifiedMessages.Any(message => DeveloperMetadataMessages.Contains(Normalize(message.Name))))
+        {
+            throw new FitFileException("Entwickler Metadaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+        }
+
         if (options.RemoveDeviceAndProfileData &&
-            verifiedMessages.Any(message => MetadataMessages.Contains(Normalize(message.Name))))
+            verifiedMessages.Any(message => DeviceAndProfileMessages.Contains(Normalize(message.Name))))
         {
             throw new FitFileException("Die Geräte und Profilinformationen konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
         }
@@ -180,29 +192,40 @@ public static class FitFileProcessor
             throw new FitFileException("Die Datei ist zu klein, um eine gültige FIT Datei zu sein.");
         }
 
-        using var stream = new MemoryStream(fileBytes, writable: false);
-        var decoder = new Decode();
-
-        if (!decoder.CheckIntegrity(stream))
+        try
         {
-            throw new FitFileException("Die FIT Datei ist beschädigt oder ihre Prüfsumme ist ungültig.");
+            using var stream = new MemoryStream(fileBytes, writable: false);
+            var decoder = new Decode();
+
+            if (!decoder.CheckIntegrity(stream))
+            {
+                throw new FitFileException("Die FIT Datei ist beschädigt oder ihre Prüfsumme ist ungültig.");
+            }
+
+            var messages = new List<Mesg>();
+            decoder.MesgEvent += (_, eventArgs) => messages.Add(new Mesg(eventArgs.mesg));
+
+            stream.Position = 0;
+            if (!decoder.Read(stream))
+            {
+                throw new FitFileException("Die FIT Datei konnte nicht vollständig gelesen werden.");
+            }
+
+            if (messages.Count == 0)
+            {
+                throw new FitFileException("Die FIT Datei enthält keine lesbaren Daten.");
+            }
+
+            return messages;
         }
-
-        var messages = new List<Mesg>();
-        decoder.MesgEvent += (_, eventArgs) => messages.Add(new Mesg(eventArgs.mesg));
-
-        stream.Position = 0;
-        if (!decoder.Read(stream))
+        catch (FitFileException)
         {
-            throw new FitFileException("Die FIT Datei konnte nicht vollständig gelesen werden.");
+            throw;
         }
-
-        if (messages.Count == 0)
+        catch (Exception)
         {
-            throw new FitFileException("Die FIT Datei enthält keine lesbaren Daten.");
+            throw new FitFileException("Die FIT Datei ist ungültig, beschädigt oder verwendet ein nicht unterstütztes Datenformat.");
         }
-
-        return messages;
     }
 
     private static byte[] EncodeMessages(IEnumerable<Mesg> messages)
@@ -219,9 +242,13 @@ public static class FitFileProcessor
                 encoder.Write(message);
             }
 
-            // Close writes the final data size and file CRC.
+            // Close finalizes the file size and calculates the FIT header and file CRC.
             encoder.Close();
             return output.ToArray();
+        }
+        catch (FitFileException)
+        {
+            throw;
         }
         catch (Exception)
         {
