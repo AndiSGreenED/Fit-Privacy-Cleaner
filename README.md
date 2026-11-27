@@ -66,7 +66,7 @@ Für einen öffentlichen Betrieb müssen HTTPS, Upload Rate Limits, Schutz vor a
 
 ## Prüfung
 
-GitHub Actions baut das .NET Projekt bei Pushes auf main und codex/** sowie bei Pull Requests. Für eine fachliche Validierung müssen zusätzlich echte FIT Testdateien aus verschiedenen Geräten und Sportarten verarbeitet und die Ergebnisse in Garmin Connect oder einem anderen FIT kompatiblen Werkzeug geprüft werden.
+GitHub Actions baut das .NET Projekt bei Pushes auf main und codex/** sowie bei Pull Requests und führt einen FIT Rundlauftest mit Prüfsummenprüfung aus. Für eine fachliche Validierung müssen zusätzlich echte FIT Testdateien aus verschiedenen Geräten und Sportarten verarbeitet und die Ergebnisse in Garmin Connect oder einem anderen FIT kompatiblen Werkzeug geprüft werden.
 
 ## Garmin FIT SDK
 
