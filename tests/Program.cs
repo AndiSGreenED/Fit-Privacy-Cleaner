@@ -56,7 +56,7 @@ if (!string.IsNullOrWhiteSpace(fixtureOutputPath))
 {
     var fullFixturePath = Path.GetFullPath(fixtureOutputPath);
     Directory.CreateDirectory(Path.GetDirectoryName(fullFixturePath)!);
-    File.WriteAllBytes(fullFixturePath, original);
+    System.IO.File.WriteAllBytes(fullFixturePath, original);
 }
 
 var originalAnalysis = FitFileProcessor.Analyze(original);
