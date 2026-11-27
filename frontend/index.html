@@ -196,7 +196,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
       <div>
         <strong>Keine dauerhafte Dateiablage durch den Cleaner</strong>
-        <p>Die Anwendung verarbeitet die Datei im Arbeitsspeicher und stellt das Ergebnis direkt zum Download bereit. FIT Dateien werden nicht in einer Anwendungsdatenbank gespeichert.</p>
+        <p>Analyse und Bereinigung laufen vollständig lokal im Browser mit dem Garmin FIT SDK. Die Datei wird nicht an einen Server übertragen und nicht in einer Anwendungsdatenbank gespeichert.</p>
       </div>
     </div>
   </section>
@@ -207,7 +207,9 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
   </footer>
 </main>
 
+<script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script>
+const fitRuntimeReady = window.Blazor.start();
 const fileInput = document.getElementById("fileInput");
 const dropzone = document.getElementById("dropzone");
 const fileCard = document.getElementById("fileCard");
@@ -222,7 +224,6 @@ const results = document.getElementById("results");
 const statsElement = document.getElementById("stats");
 const checksElement = document.getElementById("checks");
 
-const API_BASE = "https://fit-privacy-cleaner-api.andigreen.workers.dev";
 const FIT_SUBMISSION_API = "https://garmin-abruf.andigreen.workers.dev/api/fit-submissions";
 let selectedFile = null;
 let analysisComplete = false;
@@ -285,25 +286,57 @@ function clearFile() {
   setStatus("", "");
 }
 
+function fileToBase64(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+  return btoa(binary);
+}
+
+function base64ToBytes(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  const chunkSize = 0x8000;
+  for (let offset = 0; offset < binary.length; offset += chunkSize) {
+    const end = Math.min(binary.length, offset + chunkSize);
+    for (let i = offset; i < end; i++) bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
 async function sendFile(url, includeOptions) {
-  const formData = new FormData();
-  formData.append("file", selectedFile);
-
-  if (includeOptions) {
-    formData.append("removeGps", String(document.getElementById("removeGps").checked));
-    formData.append("removeDeviceAndProfileData", String(document.getElementById("removeDevice").checked));
+  await fitRuntimeReady;
+  const base64 = fileToBase64(await selectedFile.arrayBuffer());
+  if (!includeOptions) {
+    const json = await DotNet.invokeMethodAsync(
+      "FitPrivacyCleaner.Browser",
+      "Analyze",
+      base64
+    );
+    return new Response(json, { headers: { "Content-Type": "application/json" } });
   }
 
-  const response = await fetch(API_BASE + url, { method: "POST", body: formData });
-  if (!response.ok) {
-    let message = "Die Verarbeitung ist fehlgeschlagen.";
-    try {
-      const error = await response.json();
-      if (error.error) message = error.error;
-    } catch (_) {}
-    throw new Error(message);
-  }
-  return response;
+  const json = await DotNet.invokeMethodAsync(
+    "FitPrivacyCleaner.Browser",
+    "Clean",
+    base64,
+    document.getElementById("removeGps").checked,
+    document.getElementById("removeDevice").checked
+  );
+  const result = JSON.parse(json);
+  const bytes = base64ToBytes(result.fileBase64);
+  return new Response(bytes, {
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "X-Removed-Gps-Fields": String(result.removedGpsFields || 0),
+      "X-Removed-Identifier-Fields": String(result.removedIdentifierFields || 0),
+      "X-Removed-Metadata-Messages": String(result.removedMetadataMessages || 0),
+      "X-Removed-Developer-Fields": String(result.removedDeveloperFields || 0)
+    }
+  });
 }
 
 function renderAnalysis(data) {
