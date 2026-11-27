@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.Features;
 
 const long MaxRequestBytes = 51L * 1024L * 1024L;
+const int MaxInMemoryUploadBytes = 51 * 1024 * 1024;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,9 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = MaxRequestBytes;
-    options.MemoryBufferThreshold = 50 * 1024 * 1024;
+    // Keep the entire allowed FIT upload in memory rather than allowing
+    // ASP.NET Core to spill the temporary upload buffer to disk.
+    options.MemoryBufferThreshold = MaxInMemoryUploadBytes;
 });
 
 var app = builder.Build();
