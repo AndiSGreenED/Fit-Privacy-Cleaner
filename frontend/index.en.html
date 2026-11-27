@@ -359,11 +359,11 @@ async function loadVersion() {
     const response = await fetch("version.json", { cache: "no-store" });
     if (!response.ok) throw new Error("Version metadata not available");
     const version = await response.json();
-    appVersionElement.textContent = version.version || "unbekannt";
-    appBuildElement.textContent = (version.build || "unbekannt") +
+    appVersionElement.textContent = version.version || "unknown";
+    appBuildElement.textContent = (version.build || "unknown") +
       (version.run ? " · Run " + version.run : "");
   } catch (_) {
-    appBuildElement.textContent = "Build unbekannt";
+    appBuildElement.textContent = "Build unknown";
   }
 }
 
@@ -485,10 +485,10 @@ async function sendFile(url, includeOptions) {
 
 function renderAnalysis(data) {
   const statItems = [
-    ["Datensätze", data.recordCount],
-    ["Runden", data.lapCount],
+    ["Records", data.recordCount],
+    ["Laps", data.lapCount],
     ["Sessions", data.sessionCount],
-    ["FIT Nachrichten", data.messageCount]
+    ["FIT messages", data.messageCount]
   ];
 
   statsElement.innerHTML = statItems.map(function(item) {
@@ -497,20 +497,20 @@ function renderAnalysis(data) {
   }).join("");
 
   const signals = [
-    ["GPS Daten", data.hasGps],
-    ["Herzfrequenz", data.hasHeartRate],
-    ["Leistung", data.hasPower],
-    ["Kadenz", data.hasCadence],
-    ["Geschwindigkeit", data.hasSpeed],
-    ["Geräteinformationen", data.deviceInfoMessageCount > 0],
-    ["Benutzerprofil", data.userProfileMessageCount > 0],
-    ["Entwicklerfelder", data.developerFieldCount > 0]
+    ["GPS data", data.hasGps],
+    ["Heart rate", data.hasHeartRate],
+    ["Power", data.hasPower],
+    ["Cadence", data.hasCadence],
+    ["Speed", data.hasSpeed],
+    ["Device information", data.deviceInfoMessageCount > 0],
+    ["User profile", data.userProfileMessageCount > 0],
+    ["Developer fields", data.developerFieldCount > 0]
   ];
 
   checksElement.innerHTML = signals.map(function(item) {
     const present = item[1];
     return '<span class="check ' + (present ? "yes" : "") + '">' +
-      (present ? "Vorhanden" : "Nicht vorhanden") + " · " + item[0] + '</span>';
+      (present ? "Present" : "Not present") + " · " + item[0] + '</span>';
   }).join("");
 
   results.classList.add("visible");
