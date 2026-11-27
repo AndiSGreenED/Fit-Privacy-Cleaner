@@ -2,11 +2,14 @@
 @using System.Text.Json
 @using FitPrivacyCleaner
 @using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
 
 <div aria-hidden="true" hidden></div>
 
 @code {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private DotNetObjectReference<App>? _reference;
 
     private sealed record CleanResponse(
         string FileBase64,
@@ -17,11 +20,18 @@
         int OriginalMessageCount,
         int OutputMessageCount);
 
-    [JSInvokable]
-    public static string Ping() => "FIT_CLEANER_READY";
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _reference = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("fitCleanerInterop.set", _reference);
+    }
 
     [JSInvokable]
-    public static string Analyze(string fileBase64)
+    public string Ping() => "FIT_CLEANER_READY";
+
+    [JSInvokable]
+    public string Analyze(string fileBase64)
     {
         var bytes = Convert.FromBase64String(fileBase64);
         var result = FitFileProcessor.Analyze(bytes);
@@ -29,7 +39,7 @@
     }
 
     [JSInvokable]
-    public static string Clean(string fileBase64, bool removeGps, bool removeDeviceAndProfileData)
+    public string Clean(string fileBase64, bool removeGps, bool removeDeviceAndProfileData)
     {
         var bytes = Convert.FromBase64String(fileBase64);
         var result = FitFileProcessor.Clean(
@@ -46,5 +56,11 @@
             RemovedDeveloperFields: result.RemovedDeveloperFields,
             OriginalMessageCount: result.OriginalMessageCount,
             OutputMessageCount: result.OutputMessageCount), JsonOptions);
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _reference?.Dispose();
+        return ValueTask.CompletedTask;
     }
 }
