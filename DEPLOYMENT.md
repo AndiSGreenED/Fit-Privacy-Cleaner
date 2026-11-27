@@ -12,6 +12,8 @@ https://andisgreened.github.io/Fit-Privacy-Cleaner/
 
 ## 2. Cloudflare API
 
+Cloudflare Containers require the Workers Paid plan. It currently starts at 5 USD per month, with usage based charges beyond the included monthly allowances. The backend uses the basic container size with 1 GiB RAM so larger FIT uploads have sufficient memory. Check the current pricing before activating the service.
+
 The API runs in a .NET 10 container behind a Cloudflare Worker. The Worker configuration is in `wrangler.jsonc`, the request router is in `src/index.js`, and the container build is in the root `Dockerfile`.
 
 In Cloudflare:
