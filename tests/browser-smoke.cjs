@@ -115,6 +115,25 @@ const { chromium } = require("playwright");
     console.log("Cleaned FIT download:", download.suggestedFilename());
     assert.match(download.suggestedFilename(), /_anonymized\.fit$/);
 
+    const versionedPage = await page.goto(
+      "http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.0.4/?lang=de",
+      { waitUntil: "networkidle", timeout: 60000 }
+    );
+    assert.ok(versionedPage && versionedPage.ok(), "Versioned Cleaner page did not load.");
+    await page.waitForFunction(
+      () => document.getElementById("runtimeStatus")?.classList.contains("success"),
+      null,
+      { timeout: 60000 }
+    );
+    await page.waitForFunction(
+      () => document.getElementById("appBuild")?.textContent?.includes("Run"),
+      null,
+      { timeout: 15000 }
+    );
+    assert.equal(await page.locator("#appVersion").textContent(), "1.0.4", "Versioned page did not load version 1.0.4.");
+    assert.equal(await page.locator("#removeGps").isVisible(), true, "Versioned page is missing GPS selection.");
+    assert.equal(await page.locator("#analyzeButton").isDisabled(), true, "Versioned page must wait for file selection.");
+
     console.log("Browser end to end FIT smoke test passed.");
   } catch (error) {
     if (page) {
