@@ -5,6 +5,18 @@ const int MaxInMemoryUploadBytes = 51 * 1024 * 1024;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins(
+                "https://andisgreened.github.io",
+                "http://localhost:5000",
+                "http://localhost:8080",
+                "http://127.0.0.1:8080")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = MaxRequestBytes;
@@ -22,6 +34,7 @@ var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseCors("Frontend");
 
 app.MapGet("/api/health", () => Results.Ok(new
 {
