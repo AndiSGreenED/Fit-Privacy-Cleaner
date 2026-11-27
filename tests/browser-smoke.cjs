@@ -46,7 +46,7 @@ const { chromium } = require("playwright");
     const version = await page.locator("#appVersion").textContent();
     const build = await page.locator("#appBuild").textContent();
     console.log("Application version:", version, "Build:", build);
-    assert.equal(version, "1.0.3", "Unexpected application version.");
+    assert.equal(version, "1.0.4", "Unexpected application version.");
 
     const fixture = process.env.FIT_TEST_FIXTURE;
     assert.ok(fixture && require("node:fs").existsSync(fixture), "Generated FIT fixture is missing.");
