@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "frontend/**"
+      - "browser/**"
+      - "backend/FitFileProcessor.cs"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -27,12 +29,24 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore browser FIT processor
+        run: dotnet restore browser/FitPrivacyCleaner.Browser.csproj
+      - name: Publish browser FIT processor
+        run: dotnet publish browser/FitPrivacyCleaner.Browser.csproj --configuration Release --no-restore --output artifacts/publish
+      - name: Copy FIT Cleaner website into published site
+        run: |
+          mkdir -p artifacts/publish/wwwroot
+          cp -a frontend/. artifacts/publish/wwwroot/
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend
+          path: artifacts/publish/wwwroot
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
