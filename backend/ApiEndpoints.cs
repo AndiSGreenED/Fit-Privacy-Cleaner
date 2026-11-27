@@ -4,8 +4,9 @@ public static class ApiEndpoints
 {
     private const long MaxUploadBytes = 50L * 1024L * 1024L;
 
-    public static async Task<IResult> Analyze(HttpRequest request, ILogger<ApiEndpoints> logger)
+    public static async Task<IResult> Analyze(HttpRequest request, ILoggerFactory loggerFactory)
     {
+        var logger = loggerFactory.CreateLogger("FitPrivacyCleaner");
         var uploadResult = await ReadUpload(request);
         if (uploadResult.Error is not null)
         {
@@ -28,8 +29,9 @@ public static class ApiEndpoints
         }
     }
 
-    public static async Task<IResult> Anonymize(HttpRequest request, ILogger<ApiEndpoints> logger)
+    public static async Task<IResult> Anonymize(HttpRequest request, ILoggerFactory loggerFactory)
     {
+        var logger = loggerFactory.CreateLogger("FitPrivacyCleaner");
         var uploadResult = await ReadUpload(request);
         if (uploadResult.Error is not null)
         {
