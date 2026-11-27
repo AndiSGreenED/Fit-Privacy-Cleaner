@@ -23,7 +23,7 @@ Auch nach der Bereinigung kann eine Aktivität durch Zeitpunkt, Streckenverlauf,
 ## Technik
 
 - .NET 10 ASP.NET Core
-- Garmin FIT C# SDK über NuGet (Garmin.FIT.Sdk)
+- Garmin FIT C# SDK über NuGet (Garmin.FIT.Sdk 21.222.0)
 - Statische Oberfläche ohne JavaScript Framework
 - FIT Verarbeitung im Arbeitsspeicher
 - Uploadlimit: 50 MB
@@ -70,4 +70,4 @@ GitHub Actions baut das .NET Projekt bei Pushes auf main und codex/** sowie bei 
 
 ## Garmin FIT SDK
 
-Die Anwendung verwendet das offizielle Garmin FIT C# SDK (Garmin.FIT.Sdk). Es gelten die Lizenzbedingungen des FIT Protocol SDK von Garmin. Details und aktuelle Versionen: https://developer.garmin.com/fit/get-the-sdk/
+Die Anwendung verwendet das offizielle Garmin FIT C# SDK (Garmin.FIT.Sdk 21.222.0). Es gelten die Lizenzbedingungen des FIT Protocol SDK von Garmin. Details und aktuelle Versionen: https://developer.garmin.com/fit/get-the-sdk/
