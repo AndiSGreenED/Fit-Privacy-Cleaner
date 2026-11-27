@@ -114,7 +114,8 @@ public static class ApiEndpoints
 
     private static string CreateDownloadName(string originalName)
     {
-        var baseName = Path.GetFileNameWithoutExtension(originalName);
+        var normalizedName = originalName.Replace('\\', '/');
+        var baseName = Path.GetFileNameWithoutExtension(normalizedName);
         var invalidChars = Path.GetInvalidFileNameChars();
         var safeName = new string(baseName
             .Select(character => invalidChars.Contains(character) ? '_' : character)
