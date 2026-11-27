@@ -42,6 +42,9 @@ const { chromium } = require("playwright");
     const runtimeStatus = await page.locator("#runtimeStatus").textContent();
     console.log("Runtime status:", runtimeStatus);
     assert.match(runtimeStatus, /FIT Prozessor bereit/, "German FIT processor did not initialize.");
+    assert.equal(await page.locator("#removeDevice").isVisible(), true, "German device data selection is missing.");
+    assert.equal(await page.locator("#removeGps").isVisible(), true, "German GPS selection is missing.");
+    assert.equal(await page.locator("#removeGps").isChecked(), false, "GPS removal should be optional by default.");
 
     await Promise.all([
       page.waitForURL(/index\.en\.html/),
@@ -67,13 +70,21 @@ const { chromium } = require("playwright");
 
     await page.locator("#fileInput").setInputFiles(path.resolve(fixture));
     await page.waitForFunction(
-      () => {
-        const button = document.getElementById("analyzeButton");
-        return button && !button.disabled;
-      },
+      () => document.getElementById("status")?.textContent?.trim() === "File selected.",
       null,
-      { timeout: 30000 }
+      { timeout: 10000 }
     );
+    assert.equal(
+      await page.locator("#results").evaluate(element => element.classList.contains("visible")),
+      false,
+      "Selecting a FIT file must not start analysis automatically."
+    );
+    assert.equal(await page.locator("#analyzeButton").isEnabled(), true, "The explicit analysis button should be enabled.");
+    assert.equal(await page.locator("#removeDevice").isVisible(), true, "English device data selection is missing.");
+    assert.equal(await page.locator("#removeGps").isVisible(), true, "English GPS selection is missing.");
+    await page.locator("#removeGps").check();
+    assert.equal(await page.locator("#removeGps").isChecked(), true, "GPS removal option is not selectable.");
+    await page.locator("#removeGps").uncheck();
 
     await page.locator("#analyzeButton").click();
     await page.waitForFunction(
