@@ -6,6 +6,9 @@ namespace FitPrivacyCleaner.Browser;
 
 public static class FitBridge
 {
+    [JSInvokable]
+    public static string Ping() => "FIT_CLEANER_READY";
+
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     private sealed record CleanResponse(

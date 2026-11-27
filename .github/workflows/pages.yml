@@ -41,6 +41,18 @@ jobs:
         run: |
           mkdir -p artifacts/publish/wwwroot
           cp -a frontend/. artifacts/publish/wwwroot/
+      - name: Add version metadata
+        run: |
+          APP_VERSION="$(cat VERSION)"
+          BUILD_SHA="${GITHUB_SHA:0:7}"
+          cat > artifacts/publish/wwwroot/version.json <<EOF
+          {
+            "version": "$APP_VERSION",
+            "build": "$BUILD_SHA",
+            "run": "$GITHUB_RUN_NUMBER",
+            "builtAt": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          }
+          EOF
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload website

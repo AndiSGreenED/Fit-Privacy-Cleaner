@@ -166,6 +166,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
       <button id="resetButton" class="secondary" type="button">Zurücksetzen</button>
       <span id="status" class="status" role="status" aria-live="polite"></span>
     </div>
+    <div id="runtimeStatus" class="status" role="status" aria-live="polite">FIT Prozessor wird initialisiert …</div>
 
     <section id="results" class="results" aria-labelledby="analysis-title">
       <h3 id="analysis-title">Analyse abgeschlossen</h3>
@@ -203,14 +204,13 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
   </section>
 
   <footer>
-    <span>FIT Privacy Cleaner · Garmin FIT SDK</span>
+    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.0.2</span> · Build <span id="appBuild">wird geladen</span></span>
     <span>Die Originaldatei bleibt unverändert.</span>
   </footer>
 </main>
 
 <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script>
-const fitRuntimeReady = window.Blazor.start();
 const fileInput = document.getElementById("fileInput");
 const dropzone = document.getElementById("dropzone");
 const fileCard = document.getElementById("fileCard");
@@ -224,12 +224,18 @@ const statusElement = document.getElementById("status");
 const results = document.getElementById("results");
 const statsElement = document.getElementById("stats");
 const checksElement = document.getElementById("checks");
+const runtimeStatusElement = document.getElementById("runtimeStatus");
+const appVersionElement = document.getElementById("appVersion");
+const appBuildElement = document.getElementById("appBuild");
 
 const FIT_SUBMISSION_API = "https://garmin-abruf.andigreen.workers.dev/api/fit-submissions";
 let selectedFile = null;
 let analysisComplete = false;
 let cleanedBlob = null;
 let cleanedFileName = "";
+let runtimeAvailable = false;
+let runtimeError = null;
+const fitRuntimeReady = startFitRuntime();
 
 function formatBytes(bytes) {
   if (bytes < 1024) return bytes + " B";
@@ -242,6 +248,89 @@ function setStatus(message, type) {
   statusElement.className = ("status " + (type || "")).trim();
 }
 
+async function withTimeout(promise, timeoutMs, timeoutMessage) {
+  let timeoutId;
+  try {
+    return await Promise.race([
+      Promise.resolve(promise),
+      new Promise(function(_, reject) {
+        timeoutId = setTimeout(function() {
+          reject(new Error(timeoutMessage));
+        }, timeoutMs);
+      })
+    ]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function invokeDotNet(methodName, args, timeoutMs, timeoutMessage) {
+  if (!window.DotNet || typeof window.DotNet.invokeMethodAsync !== "function") {
+    throw new Error("Die .NET JavaScript Schnittstelle wurde nicht initialisiert.");
+  }
+  return withTimeout(
+    window.DotNet.invokeMethodAsync("FitPrivacyCleaner.Browser", methodName, ...args),
+    timeoutMs,
+    timeoutMessage
+  );
+}
+
+async function startFitRuntime() {
+  runtimeStatusElement.textContent = "WebAssembly wird gestartet …";
+  runtimeStatusElement.className = "status";
+  try {
+    if (!window.Blazor || typeof window.Blazor.start !== "function") {
+      throw new Error("Die Blazor Laufzeitdatei wurde nicht geladen.");
+    }
+
+    await withTimeout(
+      window.Blazor.start(),
+      30000,
+      "Zeitüberschreitung beim Start der WebAssembly Laufzeit nach 30 Sekunden."
+    );
+
+    const ping = await invokeDotNet(
+      "Ping",
+      [],
+      15000,
+      "Die WebAssembly Laufzeit antwortet nicht auf den Verbindungstest."
+    );
+
+    if (ping !== "FIT_CLEANER_READY") {
+      throw new Error("Der Verbindungstest des FIT Prozessors lieferte eine ungültige Antwort.");
+    }
+
+    runtimeAvailable = true;
+    runtimeError = null;
+    runtimeStatusElement.textContent = "FIT Prozessor bereit. Die Datei wird ausschließlich lokal im Browser verarbeitet.";
+    runtimeStatusElement.className = "status success";
+    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
+    return true;
+  } catch (error) {
+    runtimeAvailable = false;
+    runtimeError = error;
+    runtimeStatusElement.textContent = "FIT Prozessor nicht bereit: " + (error.message || String(error));
+    runtimeStatusElement.className = "status error";
+    analyzeButton.disabled = true;
+    return false;
+  }
+}
+
+async function loadVersion() {
+  try {
+    const response = await fetch("version.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("Version metadata not available");
+    const version = await response.json();
+    appVersionElement.textContent = version.version || "unbekannt";
+    appBuildElement.textContent = (version.build || "unbekannt") +
+      (version.run ? " · Run " + version.run : "");
+  } catch (_) {
+    appBuildElement.textContent = "Build unbekannt";
+  }
+}
+
+loadVersion();
+
 function resetAnalysis() {
   analysisComplete = false;
   cleanedBlob = null;
@@ -252,7 +341,7 @@ function resetAnalysis() {
   document.getElementById("sendFitButton").disabled = true;
   document.getElementById("sendStatus").textContent = "";
   cleanButton.disabled = false;
-  analyzeButton.disabled = !selectedFile;
+  analyzeButton.disabled = !selectedFile || !runtimeAvailable;
 }
 
 function selectFile(file) {
@@ -309,23 +398,39 @@ function base64ToBytes(base64) {
 }
 
 async function sendFile(url, includeOptions) {
-  await fitRuntimeReady;
-  const base64 = fileToBase64(await selectedFile.arrayBuffer());
+  const ready = await fitRuntimeReady;
+  if (!ready) {
+    throw new Error("Der FIT Prozessor konnte nicht gestartet werden. " +
+      (runtimeError && runtimeError.message ? runtimeError.message : "Unbekannter Startfehler."));
+  }
+
+  const fileBuffer = await selectedFile.arrayBuffer();
+  if (!fileBuffer || fileBuffer.byteLength === 0) {
+    throw new Error("Die ausgewählte FIT Datei konnte nicht gelesen werden.");
+  }
+  const base64 = fileToBase64(fileBuffer);
+  if (!base64) throw new Error("Die FIT Datei konnte nicht für die lokale Analyse vorbereitet werden.");
   if (!includeOptions) {
-    const json = await DotNet.invokeMethodAsync(
-      "FitPrivacyCleaner.Browser",
+    setStatus("Datei wurde eingelesen. FIT Daten werden lokal analysiert …", "");
+    const json = await invokeDotNet(
       "Analyze",
-      base64
+      [base64],
+      60000,
+      "Der FIT Prozessor hat nach 60 Sekunden nicht geantwortet."
     );
     return new Response(json, { headers: { "Content-Type": "application/json" } });
   }
 
-  const json = await DotNet.invokeMethodAsync(
-    "FitPrivacyCleaner.Browser",
+  setStatus("FIT Daten werden lokal bereinigt …", "");
+  const json = await invokeDotNet(
     "Clean",
-    base64,
-    document.getElementById("removeGps").checked,
-    document.getElementById("removeDevice").checked
+    [
+      base64,
+      document.getElementById("removeGps").checked,
+      document.getElementById("removeDevice").checked
+    ],
+    60000,
+    "Der FIT Prozessor hat nach 60 Sekunden nicht geantwortet."
   );
   const result = JSON.parse(json);
   const bytes = base64ToBytes(result.fileBase64);
@@ -416,7 +521,7 @@ analyzeButton.addEventListener("click", async function() {
     resetAnalysis();
     setStatus(error.message, "error");
   } finally {
-    analyzeButton.disabled = !selectedFile;
+    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
   }
 });
 
@@ -454,7 +559,7 @@ cleanButton.addEventListener("click", async function() {
     setStatus(error.message, "error");
   } finally {
     cleanButton.disabled = false;
-    analyzeButton.disabled = !selectedFile;
+    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
   }
 });
 
