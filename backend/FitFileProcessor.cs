@@ -31,7 +31,7 @@ public sealed record CleanResult(
     int OriginalMessageCount,
     int OutputMessageCount);
 
-public sealed class FitFileException(string message) : Exception(message);
+public sealed class FitFileException(string message) : Exception(message) { }
 
 public static class FitFileProcessor
 {
