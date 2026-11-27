@@ -44,7 +44,7 @@ const { chromium } = require("playwright");
     assert.match(runtimeStatus, /FIT Prozessor bereit/, "German FIT processor did not initialize.");
 
     await Promise.all([
-      page.waitForURL(/index\\.en\\.html/),
+      page.waitForURL(/index\.en\.html/),
       page.locator('.language-switch a[href$="index.en.html"]').click()
     ]);
     await page.waitForFunction(() => {
