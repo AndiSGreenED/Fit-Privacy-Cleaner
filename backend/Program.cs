@@ -14,7 +14,12 @@ builder.Services.AddCors(options =>
                 "http://localhost:8080",
                 "http://127.0.0.1:8080")
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .WithExposedHeaders(
+                "X-Removed-Gps-Fields",
+                "X-Removed-Identifier-Fields",
+                "X-Removed-Metadata-Messages",
+                "X-Removed-Developer-Fields"));
 });
 
 builder.WebHost.ConfigureKestrel(options =>
