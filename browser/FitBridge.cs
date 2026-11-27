@@ -6,6 +6,8 @@ namespace FitPrivacyCleaner.Browser;
 
 public static class FitBridge
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
     private sealed record CleanResponse(
         string FileBase64,
         int RemovedGpsFields,
@@ -20,7 +22,7 @@ public static class FitBridge
     {
         var bytes = Convert.FromBase64String(fileBase64);
         var result = FitFileProcessor.Analyze(bytes);
-        return JsonSerializer.Serialize(result);
+        return JsonSerializer.Serialize(result, JsonOptions);
     }
 
     [JSInvokable]
@@ -40,6 +42,6 @@ public static class FitBridge
             RemovedMetadataMessages: result.RemovedMetadataMessages,
             RemovedDeveloperFields: result.RemovedDeveloperFields,
             OriginalMessageCount: result.OriginalMessageCount,
-            OutputMessageCount: result.OutputMessageCount));
+            OutputMessageCount: result.OutputMessageCount), JsonOptions);
     }
 }
