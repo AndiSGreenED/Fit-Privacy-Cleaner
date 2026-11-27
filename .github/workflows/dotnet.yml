@@ -30,3 +30,9 @@ jobs:
 
       - name: Run FIT cleaning smoke tests
         run: dotnet run --project tests/FitPrivacyCleaner.SmokeTests.csproj --configuration Release
+
+      - name: Restore browser FIT processor
+        run: dotnet restore browser/FitPrivacyCleaner.Browser.csproj
+
+      - name: Build browser FIT processor
+        run: dotnet build browser/FitPrivacyCleaner.Browser.csproj --configuration Release --no-restore
