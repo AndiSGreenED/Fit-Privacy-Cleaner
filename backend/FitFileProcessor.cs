@@ -42,9 +42,8 @@ public sealed class FitFileException(string message) : Exception(message) { }
 
 public static class FitFileProcessor
 {
-    // Developer values are always removed because their meaning is defined by
-    // third party applications and cannot be reliably classified as harmless.
-    // Their schema messages must therefore always be removed as well.
+    // Developer values and their schema are preserved by default. They are
+    // removed only when the user explicitly selects the custom data privacy option.
     private static readonly HashSet<string> DeveloperMetadataMessages =
     [
         "developerdataid",
@@ -157,11 +156,16 @@ public static class FitFileProcessor
             var isDeveloperMetadata = DeveloperMetadataMessages.Contains(messageName);
             var isDeviceOrProfileMetadata = DeviceAndProfileMessages.Contains(messageName);
 
-            if ((options.RemoveDeveloperData && isDeveloperMetadata) ||
-                (options.RemoveDeviceAndProfileData && isDeviceOrProfileMetadata))
+            if (options.RemoveDeveloperData && isDeveloperMetadata)
             {
                 removedMetadataMessages++;
                 continue;
+            }
+
+            var removeDeviceMetadataFields = options.RemoveDeviceAndProfileData && isDeviceOrProfileMetadata;
+            if (removeDeviceMetadataFields)
+            {
+                removedMetadataMessages++;
             }
 
             var target = new Mesg(source.Name, source.Num)
@@ -187,6 +191,13 @@ public static class FitFileProcessor
 
             foreach (var field in source.Fields)
             {
+                // Device and profile messages may contain app-specific fields too.
+                // Keep those custom values while omitting all native message fields.
+                if (removeDeviceMetadataFields)
+                {
+                    continue;
+                }
+
                 // Component-expanded values are calculated by the decoder and must
                 // not be written as separate native fields.
                 if (field.IsExpandedField)
@@ -227,7 +238,10 @@ public static class FitFileProcessor
                 target.SetField(new Field(field));
             }
 
-            cleanedMessages.Add(target);
+            if (!removeDeviceMetadataFields || target.DeveloperFields.Any())
+            {
+                cleanedMessages.Add(target);
+            }
         }
 
         EnsureFileIdFirst(cleanedMessages);
@@ -263,7 +277,9 @@ public static class FitFileProcessor
         }
 
         if (options.RemoveDeviceAndProfileData &&
-            verifiedMessages.Any(message => DeviceAndProfileMessages.Contains(Normalize(message.Name))))
+            verifiedMessages.Any(message =>
+                DeviceAndProfileMessages.Contains(Normalize(message.Name)) &&
+                message.Fields.Any()))
         {
             throw new FitFileException("Die Geräte und Profilinformationen konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
         }
