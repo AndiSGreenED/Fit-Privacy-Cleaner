@@ -47,7 +47,7 @@ const { chromium } = require("playwright");
     const fixture = process.env.FIT_TEST_FIXTURE;
     assert.ok(fixture && require("node:fs").existsSync(fixture), "Generated FIT fixture is missing.");
     await Promise.all([
-      page.waitForURL(/release-1\.2\.1\/index\.en\.html/),
+      page.waitForURL(/release-1\.2\.2\/index\.en\.html/),
       page.locator('.language-switch a[href$="index.en.html"]').click()
     ]);
     await page.waitForFunction(() => document.documentElement.lang === "en" && document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
@@ -118,8 +118,8 @@ const { chromium } = require("playwright");
 
     const cleanerScriptPromise = page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/cleaner-flow.js?v="), { timeout: 15000 });
     const blazorScriptPromise = page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/_framework/blazor.webassembly.js"), { timeout: 15000 });
-    const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.2.1/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
-    assert.ok(versioned && versioned.ok(), "Version 1.2.1 page did not load.");
+    const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.2.2/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
+    assert.ok(versioned && versioned.ok(), "Version 1.2.2 page did not load.");
     const [cleanerScriptResponse, blazorScriptResponse] = await Promise.all([cleanerScriptPromise, blazorScriptPromise]);
     assert.equal(cleanerScriptResponse.status(), 200, "Versioned page must load the shared cleaner script from the site root.");
     assert.equal(blazorScriptResponse.status(), 200, "Versioned page must load Blazor from the site root.");
@@ -129,7 +129,7 @@ const { chromium } = require("playwright");
     assert.equal(await page.locator("#removeLocation").isVisible(), true);
     assert.equal(await page.locator("#analyzeButton").isDisabled(), true);
     assert.deepEqual(versionMetadataRequests, [], "Build metadata must be embedded in the release HTML, not fetched from version.json.");
-    console.log("FIT Privacy Cleaner 1.2.1 browser end-to-end tests passed.");
+    console.log("FIT Privacy Cleaner 1.2.2 browser end-to-end tests passed.");
   } catch (error) {
     if (page) {
       await page.screenshot({ path: "artifacts/browser-smoke-failure.png", fullPage: true }).catch(() => {});
