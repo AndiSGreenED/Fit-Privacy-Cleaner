@@ -119,7 +119,7 @@ Require(originalAnalysis.HasGps, "Expected GPS coordinates in generated activity
 Require(originalAnalysis.HasHeartRate, "Expected heart rate in generated activity.");
 Require(originalAnalysis.HasPower, "Expected power in generated activity.");
 Require(originalAnalysis.HasCadence, "Expected cadence in generated activity.");
-Require(originalAnalysis.DeveloperFieldCount == 3, "Expected one custom jump field in generated activity.");
+Require(originalAnalysis.DeveloperFieldCount == 3, "Expected three custom app fields in generated activity.");
 Require(originalAnalysis.DeviceInfoMessageCount == 1, "Expected one device info message.");
 Require(originalAnalysis.UserProfileMessageCount == 1, "Expected one user profile message.");
 
@@ -136,7 +136,7 @@ Require(cleanedAnalysis.RecordCount == 1, "Record message was lost during cleani
 Require(cleanedAnalysis.HasHeartRate, "Heart rate was lost during cleaning.");
 Require(cleanedAnalysis.HasPower, "Power was lost during cleaning.");
 Require(cleanedAnalysis.HasCadence, "Cadence was lost during cleaning.");
-Require(cleanedAnalysis.DeveloperFieldCount == 3, "Custom developer field was lost during normal cleaning.");
+Require(cleanedAnalysis.DeveloperFieldCount == 3, "Custom developer fields were lost during normal cleaning.");
 var preservedDeveloperFields = DecodeMessages(cleaned.FileBytes)
     .SelectMany(message => message.DeveloperFields)
     .ToDictionary(field => field.Name ?? string.Empty);
@@ -160,7 +160,7 @@ var preservedGps = FitFileProcessor.Clean(
     new CleanOptions(RemoveGps: false, RemoveDeviceAndProfileData: true));
 var preservedGpsAnalysis = FitFileProcessor.Analyze(preservedGps.FileBytes);
 Require(preservedGpsAnalysis.HasGps, "GPS should remain when GPS removal is disabled.");
-Require(preservedGpsAnalysis.DeveloperFieldCount == 1, "Custom developer fields should remain when their removal is disabled.");
+Require(preservedGpsAnalysis.DeveloperFieldCount == 3, "All custom developer fields should remain when their removal is disabled.");
 
 var removedPrivateMetrics = FitFileProcessor.Clean(
     original,
