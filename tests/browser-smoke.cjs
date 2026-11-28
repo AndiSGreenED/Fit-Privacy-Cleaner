@@ -123,8 +123,8 @@ const { chromium } = require("playwright");
 
     const cleanerScriptPromise = page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/cleaner-flow.js?v="), { timeout: 15000 });
     const blazorScriptPromise = page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/_framework/blazor.webassembly.js"), { timeout: 15000 });
-    const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.2.2/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
-    assert.ok(versioned && versioned.ok(), "Version 1.2.2 page did not load.");
+    const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.2.3/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
+    assert.ok(versioned && versioned.ok(), "Version 1.2.3 page did not load.");
     const [cleanerScriptResponse, blazorScriptResponse] = await Promise.all([cleanerScriptPromise, blazorScriptPromise]);
     assert.equal(cleanerScriptResponse.status(), 200, "Versioned page must load the shared cleaner script from the site root.");
     assert.equal(blazorScriptResponse.status(), 200, "Versioned page must load Blazor from the site root.");
@@ -135,7 +135,7 @@ const { chromium } = require("playwright");
     assert.equal(await page.locator("#analyzeButton").isDisabled(), true);
     assert.ok(versionMetadataRequests.length >= 3, "German, English, and direct release page loads must fetch live version.json metadata.");
     assert.ok(versionMetadataRequests.every(url => new URL(url).searchParams.has("_")), "Version metadata requests must use a unique cache busting query.");
-    console.log("FIT Privacy Cleaner 1.2.2 browser end-to-end tests passed.");
+    console.log("FIT Privacy Cleaner 1.2.3 browser end-to-end tests passed.");
   } catch (error) {
     if (page) {
       await page.screenshot({ path: "artifacts/browser-smoke-failure.png", fullPage: true }).catch(() => {});
