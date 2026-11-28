@@ -16,7 +16,7 @@ Nach jeder Änderung an `frontend`, `browser` oder `backend/FitFileProcessor.cs`
 
 Analyse und Bereinigung erfolgen lokal im Browser mit dem offiziellen Garmin FIT SDK für .NET. Es ist dafür kein API Server und kein Cloudflare Workers Paid Tarif erforderlich. Die FIT Datei wird für Analyse und Bereinigung nicht an einen Server übertragen.
 
-Erst wenn ein Nutzer nach erfolgreicher Bereinigung ausdrücklich „Bereinigte FIT Datei senden“ auswählt und der Übermittlung zustimmt, wird die bereinigte Ausgabedatei an den bestehenden SurfsApp Worker übertragen.
+Erst wenn ein Nutzer nach erfolgreicher Bereinigung auf „Bereinigte FIT Datei senden“ klickt, wird die bereinigte Ausgabedatei an den bestehenden SurfsApp Worker übertragen. Der Klick ist die ausdrückliche Einsendehandlung. Name und Kontakt E Mail sind optional.
 
 Der Upload verwendet:
 
