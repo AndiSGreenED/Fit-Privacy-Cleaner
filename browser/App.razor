@@ -14,6 +14,7 @@
     private sealed record CleanResponse(
         string FileBase64,
         int RemovedGpsFields,
+        int RemovedLocationFields,
         int RemovedIdentifierFields,
         int RemovedHeartRateFields,
         int RemovedPowerFields,
@@ -49,6 +50,31 @@
         bool removeHeartRate,
         bool removePower,
         bool removeCadence,
+        bool removeDeveloperData) =>
+        CleanInternal(fileBase64, removeGps, removeGps, removeDeviceAndProfileData,
+            removeHeartRate, removePower, removeCadence, removeDeveloperData);
+
+    [JSInvokable]
+    public string CleanV2(
+        string fileBase64,
+        bool removeGps,
+        bool removeLocation,
+        bool removeDeviceAndProfileData,
+        bool removeHeartRate,
+        bool removePower,
+        bool removeCadence,
+        bool removeDeveloperData) =>
+        CleanInternal(fileBase64, removeGps, removeLocation, removeDeviceAndProfileData,
+            removeHeartRate, removePower, removeCadence, removeDeveloperData);
+
+    private string CleanInternal(
+        string fileBase64,
+        bool removeGps,
+        bool removeLocation,
+        bool removeDeviceAndProfileData,
+        bool removeHeartRate,
+        bool removePower,
+        bool removeCadence,
         bool removeDeveloperData)
     {
         var bytes = Convert.FromBase64String(fileBase64);
@@ -60,11 +86,13 @@
                 RemoveHeartRate: removeHeartRate,
                 RemovePower: removePower,
                 RemoveCadence: removeCadence,
-                RemoveDeveloperData: removeDeveloperData));
+                RemoveDeveloperData: removeDeveloperData,
+                RemoveLocation: removeLocation));
 
         return JsonSerializer.Serialize(new CleanResponse(
             FileBase64: Convert.ToBase64String(result.FileBytes),
             RemovedGpsFields: result.RemovedGpsFields,
+            RemovedLocationFields: result.RemovedLocationFields,
             RemovedIdentifierFields: result.RemovedIdentifierFields,
             RemovedHeartRateFields: result.RemovedHeartRateFields,
             RemovedPowerFields: result.RemovedPowerFields,

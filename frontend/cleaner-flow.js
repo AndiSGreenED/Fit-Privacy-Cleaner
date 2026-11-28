@@ -1,4 +1,4 @@
-const T = document.documentElement.lang === "en" ? {"badExt":"Please select a file with the .fit extension.","tooLarge":"The file is larger than 50 MB.","empty":"The selected file is empty.","fileSelected":"File selected. Choose what to remove below.","runtimeStarting":"Starting WebAssembly…","runtimeReady":"FIT processor ready. Your file is processed locally in this browser.","runtimeFailed":"FIT processor not ready: ","runtimeMissing":"The Blazor runtime file did not load.","runtimeTimeout":"Timed out while starting the WebAssembly runtime after 30 seconds.","componentMissing":"The FIT processor component was not initialized.","pingFailed":"The WebAssembly runtime did not respond to the connection test.","pingInvalid":"The FIT processor connection test returned an invalid response.","noDotNet":"The .NET JavaScript interface was not initialized.","notConnected":"The FIT processor is not connected yet.","fileRead":"The selected FIT file could not be read.","filePrepare":"The FIT file could not be prepared for local analysis.","analyzing":"Reading FIT data locally…","analysisTimeout":"The FIT processor did not respond within 60 seconds.","analysisError":"Analysis failed.","analysisSuccess":"Analysis complete. No data has been changed or uploaded.","readOnlyTitle":"What this analysis means","readOnlyText":"The original FIT file was only read. No information has been removed yet, and nothing has been sent to a server.","found":"Found in your file","notFound":"Not found in your file","noPrivate":"No GPS data, device details, profile information or app specific fields were found.","gpsLabel":"GPS coordinates","deviceLabel":"Device and profile information","gpsFound":"GPS position fields are present. They can reveal start, finish and route points.","deviceFound":"Device information is present, such as manufacturer, model, serial number or device ID.","profileFound":"Profile or file creator information is present. It can include names and contact identifiers.","developerFound":"Custom fields from apps or accessories are present. These may contain jump values and other app specific measurements.","cleanStarting":"Cleaning the FIT file locally and verifying the result…","cleaned":"The cleaned file has been created and verified locally. Nothing has been uploaded. Choose download or voluntary submission below.","gpsRemoved":"GPS coordinates removed: {count} position fields, covering start, finish and track points.","gpsNone":"No GPS position fields were found to remove.","deviceRemoved":"Device and profile information removed: {count} identifier fields.","developerRemoved":"App and custom fields removed: {count} values.","developerNone":"No app or custom field values were found to remove.","metadataRemoved":"Metadata messages removed in total: {count}.","downloadError":"The cleaned FIT file is not available yet.","submissionTooLarge":"The cleaned file is larger than 2 MB and cannot be submitted. You can still download it.","uploadStarting":"Sending the cleaned FIT file…","uploadSuccess":"Thank you. The cleaned FIT file has been sent to SurfsApp development.","uploadFailure":"The cleaned FIT file could not be submitted.","cleanError":"The file could not be cleaned. No download or upload was started.","previewIntro":"The selected categories will be removed.","previewNone":"No categories are selected. All other FIT data will be kept.","developerLabel":"App and custom fields","heartRateLabel":"Heart rate","powerLabel":"Power","cadenceLabel":"Cadence","heartRateRemoved":"Heart rate data removed: {count} fields.","powerRemoved":"Power data removed: {count} fields.","cadenceRemoved":"Cadence data removed: {count} fields.","noSelectedData":"No fields from the selected categories were found to remove.","sendIntro":"The cleaned FIT file is sent to SurfsApp only when you click the send button. Name and email are optional."} : {"badExt":"Bitte eine Datei mit der Endung .fit auswählen.","tooLarge":"Die Datei ist größer als 50 MB.","empty":"Die ausgewählte Datei ist leer.","fileSelected":"Datei ausgewählt. Wähle unten, was entfernt werden soll.","runtimeStarting":"WebAssembly wird gestartet …","runtimeReady":"FIT Prozessor bereit. Deine Datei wird lokal in diesem Browser verarbeitet.","runtimeFailed":"FIT Prozessor nicht bereit: ","runtimeMissing":"Die Blazor Laufzeitdatei wurde nicht geladen.","runtimeTimeout":"Zeitüberschreitung beim Start der WebAssembly Laufzeit nach 30 Sekunden.","componentMissing":"Die FIT Prozessor Komponente wurde nicht initialisiert.","pingFailed":"Die WebAssembly Laufzeit antwortet nicht auf den Verbindungstest.","pingInvalid":"Der Verbindungstest des FIT Prozessors lieferte eine ungültige Antwort.","noDotNet":"Die .NET JavaScript Schnittstelle wurde nicht initialisiert.","notConnected":"Der FIT Prozessor ist noch nicht verbunden.","fileRead":"Die ausgewählte FIT Datei konnte nicht gelesen werden.","filePrepare":"Die FIT Datei konnte nicht für die lokale Analyse vorbereitet werden.","analyzing":"FIT Daten werden lokal eingelesen …","analysisTimeout":"Der FIT Prozessor hat nach 60 Sekunden nicht geantwortet.","analysisError":"Die Analyse ist fehlgeschlagen.","analysisSuccess":"Analyse abgeschlossen. Es wurden noch keine Daten verändert oder übertragen.","readOnlyTitle":"Was diese Analyse bedeutet","readOnlyText":"Die Originaldatei wurde nur ausgelesen. Es wurden noch keine Informationen entfernt und nichts wurde an einen Server übertragen.","found":"In deiner Datei gefunden","notFound":"In deiner Datei nicht gefunden","noPrivate":"Es wurden keine GPS Daten, Geräteangaben, Profilinformationen oder App Zusatzfelder gefunden.","gpsLabel":"GPS Koordinaten","deviceLabel":"Geräte und Profilinformationen","gpsFound":"GPS Positionsfelder sind vorhanden. Sie können Start, Ziel und Streckenpunkte verraten.","deviceFound":"Geräteinformationen sind vorhanden, zum Beispiel Hersteller, Modell, Seriennummer oder Gerätekennung.","profileFound":"Profil oder Dateierstellerinformationen sind vorhanden. Dazu können Namen und Kontaktkennungen gehören.","developerFound":"Eigene Zusatzfelder von Apps oder Zubehör sind vorhanden. Darin können Sprungwerte und weitere app spezifische Messwerte stecken.","cleanStarting":"FIT Datei wird lokal bereinigt und das Ergebnis geprüft …","cleaned":"Die bereinigte Datei wurde lokal erstellt und geprüft. Es wurde nichts hochgeladen. Du kannst jetzt herunterladen oder die Datei freiwillig einsenden.","gpsRemoved":"GPS Koordinaten entfernt: {count} Positionsfelder aus Start, Ziel und Streckenpunkten.","gpsNone":"Es wurden keine GPS Positionsfelder zum Entfernen gefunden.","deviceRemoved":"Geräte und Profilinformationen entfernt: {count} Kennungsfelder.","developerRemoved":"App und eigene Zusatzfelder entfernt: {count} Werte.","developerNone":"Es wurden keine App oder Zusatzfeldwerte zum Entfernen gefunden.","metadataRemoved":"Metadatennachrichten insgesamt entfernt: {count}.","downloadError":"Die bereinigte FIT Datei ist noch nicht verfügbar.","submissionTooLarge":"Die bereinigte Datei ist größer als 2 MB und kann nicht eingesendet werden. Du kannst sie weiterhin herunterladen.","uploadStarting":"Bereinigte FIT Datei wird übertragen …","uploadSuccess":"Danke. Die bereinigte FIT Datei wurde an die SurfsApp Entwicklung übermittelt.","uploadFailure":"Die bereinigte FIT Datei konnte nicht übermittelt werden.","cleanError":"Die Datei konnte nicht bereinigt werden. Es wurde kein Download und kein Upload gestartet.","previewIntro":"Die ausgewählten Bereiche werden entfernt.","previewNone":"Es ist keine Kategorie ausgewählt. Alle übrigen FIT Daten bleiben erhalten.","developerLabel":"App und eigene Zusatzfelder","heartRateLabel":"Herzfrequenz","powerLabel":"Leistung","cadenceLabel":"Kadenz","heartRateRemoved":"Herzfrequenzdaten entfernt: {count} Felder.","powerRemoved":"Leistungsdaten entfernt: {count} Felder.","cadenceRemoved":"Kadenzdaten entfernt: {count} Felder.","noSelectedData":"In den ausgewählten Kategorien wurden keine Felder zum Entfernen gefunden.","sendIntro":"Die bereinigte FIT Datei wird erst übertragen, wenn du auf „Bereinigte FIT Datei senden“ klickst. Name und E Mail sind optional."};
+const T = document.documentElement.lang === "en" ? {"badExt":"Please select a file with the .fit extension.","tooLarge":"The file is larger than 50 MB.","empty":"The selected file is empty.","fileSelected":"File selected. Choose what to remove below.","runtimeStarting":"Starting WebAssembly…","runtimeReady":"FIT processor ready. Your file is processed locally in this browser.","runtimeFailed":"FIT processor not ready: ","runtimeMissing":"The Blazor runtime file did not load.","runtimeTimeout":"Timed out while starting the WebAssembly runtime after 30 seconds.","componentMissing":"The FIT processor component was not initialized.","pingFailed":"The WebAssembly runtime did not respond to the connection test.","pingInvalid":"The FIT processor connection test returned an invalid response.","noDotNet":"The .NET JavaScript interface was not initialized.","notConnected":"The FIT processor is not connected yet.","fileRead":"The selected FIT file could not be read.","filePrepare":"The FIT file could not be prepared for local analysis.","analyzing":"Reading FIT data locally…","analysisTimeout":"The FIT processor did not respond within 60 seconds.","analysisError":"Analysis failed.","analysisSuccess":"Analysis complete. No data has been changed or uploaded.","readOnlyTitle":"What this analysis means","readOnlyText":"The original FIT file was only read. No information has been removed yet, and nothing has been sent to a server.","found":"Found in your file","notFound":"Not found in your file","noPrivate":"No GPS track points, start or finish locations, device details, profile information or app specific fields were found.","gpsLabel":"GPS track points","locationLabel":"Start and finish locations","deviceLabel":"Device and profile information","gpsFound":"GPS coordinates are present in recorded track points and reveal the route.","locationFound":"Stored start and finish coordinates are present in session or lap summaries.","deviceFound":"Device information is present, such as manufacturer, model, serial number or device ID.","profileFound":"Profile or file creator information is present. It can include names and contact identifiers.","developerFound":"Custom fields from apps or accessories are present. These may contain jump values and other app specific measurements.","cleanStarting":"Cleaning the FIT file locally and verifying the result…","cleaned":"The cleaned file has been created and verified locally. Nothing has been uploaded. Choose download or voluntary submission below.","gpsRemoved":"GPS track point coordinates removed: {count} fields.","gpsNone":"No GPS track point coordinates were found to remove.","locationRemoved":"Start and finish location coordinates removed: {count} fields.","deviceRemoved":"Device and profile information removed: {count} identifier fields.","developerRemoved":"App and custom fields removed: {count} values.","developerNone":"No app or custom field values were found to remove.","metadataRemoved":"Metadata messages removed in total: {count}.","downloadError":"The cleaned FIT file is not available yet.","submissionTooLarge":"The cleaned file is larger than 2 MB and cannot be submitted. You can still download it.","uploadStarting":"Sending the cleaned FIT file…","uploadSuccess":"Thank you. The cleaned FIT file has been sent to SurfsApp development.","uploadFailure":"The cleaned FIT file could not be submitted.","cleanError":"The file could not be cleaned. No download or upload was started.","previewIntro":"The selected categories will be removed.","previewNone":"No categories are selected. All other FIT data will be kept.","developerLabel":"App and custom fields","heartRateLabel":"Heart rate","powerLabel":"Power","cadenceLabel":"Cadence","heartRateRemoved":"Heart rate data removed: {count} fields.","powerRemoved":"Power data removed: {count} fields.","cadenceRemoved":"Cadence data removed: {count} fields.","noSelectedData":"No fields from the selected categories were found to remove.","sendIntro":"The cleaned FIT file is sent to SurfsApp only when you click the send button. Name and email are optional."} : {"badExt":"Bitte eine Datei mit der Endung .fit auswählen.","tooLarge":"Die Datei ist größer als 50 MB.","empty":"Die ausgewählte Datei ist leer.","fileSelected":"Datei ausgewählt. Wähle unten, was entfernt werden soll.","runtimeStarting":"WebAssembly wird gestartet …","runtimeReady":"FIT Prozessor bereit. Deine Datei wird lokal in diesem Browser verarbeitet.","runtimeFailed":"FIT Prozessor nicht bereit: ","runtimeMissing":"Die Blazor Laufzeitdatei wurde nicht geladen.","runtimeTimeout":"Zeitüberschreitung beim Start der WebAssembly Laufzeit nach 30 Sekunden.","componentMissing":"Die FIT Prozessor Komponente wurde nicht initialisiert.","pingFailed":"Die WebAssembly Laufzeit antwortet nicht auf den Verbindungstest.","pingInvalid":"Der Verbindungstest des FIT Prozessors lieferte eine ungültige Antwort.","noDotNet":"Die .NET JavaScript Schnittstelle wurde nicht initialisiert.","notConnected":"Der FIT Prozessor ist noch nicht verbunden.","fileRead":"Die ausgewählte FIT Datei konnte nicht gelesen werden.","filePrepare":"Die FIT Datei konnte nicht für die lokale Analyse vorbereitet werden.","analyzing":"FIT Daten werden lokal eingelesen …","analysisTimeout":"Der FIT Prozessor hat nach 60 Sekunden nicht geantwortet.","analysisError":"Die Analyse ist fehlgeschlagen.","analysisSuccess":"Analyse abgeschlossen. Es wurden noch keine Daten verändert oder übertragen.","readOnlyTitle":"Was diese Analyse bedeutet","readOnlyText":"Die Originaldatei wurde nur ausgelesen. Es wurden noch keine Informationen entfernt und nichts wurde an einen Server übertragen.","found":"In deiner Datei gefunden","notFound":"In deiner Datei nicht gefunden","noPrivate":"Es wurden keine GPS Trackpunkte, Start oder Zielstandorte, Geräteangaben, Profilinformationen oder App Zusatzfelder gefunden.","gpsLabel":"GPS Streckenverlauf","locationLabel":"Start und Zielstandorte","deviceLabel":"Geräte und Profilinformationen","gpsFound":"GPS Koordinaten sind in den aufgezeichneten Trackpunkten enthalten und zeigen den Streckenverlauf.","locationFound":"Gespeicherte Start und Zielkoordinaten sind in Session oder Rundeninformationen vorhanden.","deviceFound":"Geräteinformationen sind vorhanden, zum Beispiel Hersteller, Modell, Seriennummer oder Gerätekennung.","profileFound":"Profil oder Dateierstellerinformationen sind vorhanden. Dazu können Namen und Kontaktkennungen gehören.","developerFound":"Eigene Zusatzfelder von Apps oder Zubehör sind vorhanden. Darin können Sprungwerte und weitere app spezifische Messwerte stecken.","cleanStarting":"FIT Datei wird lokal bereinigt und das Ergebnis geprüft …","cleaned":"Die bereinigte Datei wurde lokal erstellt und geprüft. Es wurde nichts hochgeladen. Du kannst jetzt herunterladen oder die Datei freiwillig einsenden.","gpsRemoved":"GPS Koordinaten aus Trackpunkten entfernt: {count} Felder.","gpsNone":"Es wurden keine GPS Koordinaten in Trackpunkten zum Entfernen gefunden.","locationRemoved":"Start und Zielstandorte entfernt: {count} Koordinatenfelder.","deviceRemoved":"Geräte und Profilinformationen entfernt: {count} Kennungsfelder.","developerRemoved":"App und eigene Zusatzfelder entfernt: {count} Werte.","developerNone":"Es wurden keine App oder Zusatzfeldwerte zum Entfernen gefunden.","metadataRemoved":"Metadatennachrichten insgesamt entfernt: {count}.","downloadError":"Die bereinigte FIT Datei ist noch nicht verfügbar.","submissionTooLarge":"Die bereinigte Datei ist größer als 2 MB und kann nicht eingesendet werden. Du kannst sie weiterhin herunterladen.","uploadStarting":"Bereinigte FIT Datei wird übertragen …","uploadSuccess":"Danke. Die bereinigte FIT Datei wurde an die SurfsApp Entwicklung übermittelt.","uploadFailure":"Die bereinigte FIT Datei konnte nicht übermittelt werden.","cleanError":"Die Datei konnte nicht bereinigt werden. Es wurde kein Download und kein Upload gestartet.","previewIntro":"Die ausgewählten Bereiche werden entfernt.","previewNone":"Es ist keine Kategorie ausgewählt. Alle übrigen FIT Daten bleiben erhalten.","developerLabel":"App und eigene Zusatzfelder","heartRateLabel":"Herzfrequenz","powerLabel":"Leistung","cadenceLabel":"Kadenz","heartRateRemoved":"Herzfrequenzdaten entfernt: {count} Felder.","powerRemoved":"Leistungsdaten entfernt: {count} Felder.","cadenceRemoved":"Kadenzdaten entfernt: {count} Felder.","noSelectedData":"In den ausgewählten Kategorien wurden keine Felder zum Entfernen gefunden.","sendIntro":"Die bereinigte FIT Datei wird erst übertragen, wenn du auf „Bereinigte FIT Datei senden“ klickst. Name und E Mail sind optional."};
 const fileInput = document.getElementById("fileInput");
 const dropzone = document.getElementById("dropzone");
 const fileCard = document.getElementById("fileCard");
@@ -11,6 +11,7 @@ const resetButton = document.getElementById("resetButton");
 const removeFileButton = document.getElementById("removeFile");
 const removeDeviceInput = document.getElementById("removeDevice");
 const removeGpsInput = document.getElementById("removeGps");
+const removeLocationInput = document.getElementById("removeLocation");
 const removeHeartRateInput = document.getElementById("removeHeartRate");
 const removePowerInput = document.getElementById("removePower");
 const removeCadenceInput = document.getElementById("removeCadence");
@@ -69,6 +70,7 @@ function updatePrivacyPreview() {
   const selected = [];
   if (removeDeviceInput.checked) selected.push(T.deviceLabel);
   if (removeGpsInput.checked) selected.push(T.gpsLabel);
+  if (removeLocationInput && removeLocationInput.checked) selected.push(T.locationLabel);
   if (removeHeartRateInput.checked) selected.push(T.heartRateLabel);
   if (removePowerInput.checked) selected.push(T.powerLabel);
   if (removeCadenceInput.checked) selected.push(T.cadenceLabel);
@@ -117,13 +119,24 @@ async function startFitRuntime() {
   }
 }
 async function loadVersion() {
+  const releaseMatch = location.pathname.match(/\/release-([0-9]+\.[0-9]+\.[0-9]+)\//);
+  const releaseVersion = releaseMatch ? releaseMatch[1] : "unknown";
+  appVersionElement.textContent = releaseVersion;
+  const cleanerScript = document.querySelector('script[src*="cleaner-flow.js"]');
+  const buildId = cleanerScript ? new URL(cleanerScript.src, location.href).searchParams.get("v") : "";
+  if (!/^[a-f0-9]{7}$/.test(buildId || "")) {
+    appBuildElement.textContent = "Archived build";
+    return;
+  }
   try {
-    const response = await fetch("/Fit-Privacy-Cleaner/version.json?release=1.2.0", { cache: "no-store" });
+    const response = await fetch("/Fit-Privacy-Cleaner/version.json?build=" + encodeURIComponent(buildId), { cache: "no-store" });
     if (!response.ok) throw new Error("Version metadata not available");
     const version = await response.json();
-    appVersionElement.textContent = version.version || "unknown";
-    appBuildElement.textContent = (version.build || "unknown") + (version.run ? " · Run " + version.run : "");
-  } catch (_) { appBuildElement.textContent = "Build unknown"; }
+    if (version.version !== releaseVersion || version.build !== buildId) throw new Error("Version and build do not match");
+    appBuildElement.textContent = version.build + (version.run ? " · Run " + version.run : "");
+  } catch (_) {
+    appBuildElement.textContent = "Build does not match this version";
+  }
 }
 loadVersion();
 function resetAnalysis() {
@@ -189,7 +202,17 @@ async function sendFile(includeOptions) {
     const json = await invokeDotNet("Analyze", [base64], 60000, T.analysisTimeout);
     return new Response(json, { headers: { "Content-Type": "application/json" } });
   }
-  const json = await invokeDotNet("Clean", [
+  const cleanMethod = removeLocationInput ? "CleanV2" : "Clean";
+  const cleanArguments = removeLocationInput ? [
+    base64,
+    removeGpsInput.checked,
+    removeLocationInput.checked,
+    removeDeviceInput.checked,
+    removeHeartRateInput.checked,
+    removePowerInput.checked,
+    removeCadenceInput.checked,
+    removeDeveloperInput.checked
+  ] : [
     base64,
     removeGpsInput.checked,
     removeDeviceInput.checked,
@@ -197,12 +220,14 @@ async function sendFile(includeOptions) {
     removePowerInput.checked,
     removeCadenceInput.checked,
     removeDeveloperInput.checked
-  ], 60000, T.analysisTimeout);
+  ];
+  const json = await invokeDotNet(cleanMethod, cleanArguments, 60000, T.analysisTimeout);
   const result = JSON.parse(json);
   const bytes = base64ToBytes(result.fileBase64);
   return new Response(bytes, { headers: {
     "Content-Type": "application/octet-stream",
     "X-Removed-Gps-Fields": String(result.removedGpsFields || 0),
+    "X-Removed-Location-Fields": String(result.removedLocationFields || 0),
     "X-Removed-Identifier-Fields": String(result.removedIdentifierFields || 0),
     "X-Removed-Heart-Rate-Fields": String(result.removedHeartRateFields || 0),
     "X-Removed-Power-Fields": String(result.removedPowerFields || 0),
@@ -218,15 +243,16 @@ function renderAnalysis(data) {
   statsElement.innerHTML = statItems.map(function(item) {
     return '<div class="stat"><strong>' + Number(item[1]).toLocaleString(isEnglish ? "en-US" : "de-DE") + '</strong><span>' + item[0] + '</span></div>';
   }).join("");
-  const labels = isEnglish ? ["GPS coordinates","Heart rate","Power","Cadence","Speed","Device information","User profile","Developer fields"] :
-    ["GPS Koordinaten","Herzfrequenz","Leistung","Kadenz","Geschwindigkeit","Geräteinformationen","Benutzerprofil","Entwicklerfelder"];
-  const signals = [[labels[0],data.hasGps],[labels[1],data.hasHeartRate],[labels[2],data.hasPower],[labels[3],data.hasCadence],[labels[4],data.hasSpeed],
-    [labels[5],data.deviceInfoMessageCount>0],[labels[6],data.userProfileMessageCount>0],[labels[7],data.developerFieldCount>0]];
+  const labels = isEnglish ? ["GPS track points","Start and finish locations","Heart rate","Power","Cadence","Speed","Device information","User profile","Developer fields"] :
+    ["GPS Streckenverlauf","Start und Zielstandorte","Herzfrequenz","Leistung","Kadenz","Geschwindigkeit","Geräteinformationen","Benutzerprofil","Entwicklerfelder"];
+  const signals = [[labels[0],data.hasGps],[labels[1],data.hasLocation],[labels[2],data.hasHeartRate],[labels[3],data.hasPower],[labels[4],data.hasCadence],[labels[5],data.hasSpeed],
+    [labels[6],data.deviceInfoMessageCount>0],[labels[7],data.userProfileMessageCount>0],[labels[8],data.developerFieldCount>0]];
   checksElement.innerHTML = signals.map(function(item) {
     return '<span class="check ' + (item[1] ? "yes" : "") + '">' + (item[1] ? T.found : T.notFound) + " · " + item[0] + '</span>';
   }).join("");
   const findings = [];
   if (data.hasGps) findings.push(T.gpsFound);
+  if (data.hasLocation) findings.push(T.locationFound);
   if (data.deviceInfoMessageCount > 0) findings.push(T.deviceFound);
   if (data.userProfileMessageCount > 0) findings.push(T.profileFound);
   if (data.developerFieldCount > 0) findings.push(T.developerFound);
@@ -250,6 +276,7 @@ function updateSendButton() {
 function renderCleanedDetails(counts) {
   const items = [];
   if (removeGpsInput.checked) items.push(counts.gps > 0 ? T.gpsRemoved.replace("{count}", counts.gps) : T.gpsNone);
+  if (removeLocationInput && removeLocationInput.checked) items.push(T.locationRemoved.replace("{count}", counts.location));
   if (removeDeviceInput.checked) items.push(T.deviceRemoved.replace("{count}", counts.identifiers));
   if (removeHeartRateInput.checked) items.push(T.heartRateRemoved.replace("{count}", counts.heartRate));
   if (removePowerInput.checked) items.push(T.powerRemoved.replace("{count}", counts.power));
@@ -270,6 +297,7 @@ async function cleanSelectedFile() {
     cleanedFileName = baseName + "_anonymized.fit";
     const counts = {
       gps:Number(response.headers.get("X-Removed-Gps-Fields")||0),
+      location:Number(response.headers.get("X-Removed-Location-Fields")||0),
       identifiers:Number(response.headers.get("X-Removed-Identifier-Fields")||0),
       heartRate:Number(response.headers.get("X-Removed-Heart-Rate-Fields")||0),
       power:Number(response.headers.get("X-Removed-Power-Fields")||0),
@@ -312,7 +340,7 @@ resetButton.addEventListener("click", clearFile);
 dropzone.addEventListener("dragover", function(event) { event.preventDefault(); dropzone.classList.add("dragover"); });
 dropzone.addEventListener("dragleave", function(event) { event.preventDefault(); dropzone.classList.remove("dragover"); });
 dropzone.addEventListener("drop", function(event) { event.preventDefault(); dropzone.classList.remove("dragover"); selectFile(event.dataTransfer.files[0]); });
-[removeDeviceInput,removeGpsInput,removeHeartRateInput,removePowerInput,removeCadenceInput,removeDeveloperInput].forEach(function(input) {
+[removeDeviceInput,removeGpsInput,removeLocationInput,removeHeartRateInput,removePowerInput,removeCadenceInput,removeDeveloperInput].filter(Boolean).forEach(function(input) {
   input.addEventListener("change", function() { updatePrivacyPreview(); if (analysisComplete) resetAnalysis(); });
 });
 updatePrivacyPreview();

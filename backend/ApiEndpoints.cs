@@ -39,8 +39,10 @@ public static class ApiEndpoints
         }
 
         var form = uploadResult.Form!;
+        var removeGps = ParseBoolean(form["removeGps"], defaultValue: false);
         var options = new CleanOptions(
-            RemoveGps: ParseBoolean(form["removeGps"], defaultValue: false),
+            RemoveGps: removeGps,
+            RemoveLocation: ParseBoolean(form["removeLocation"], defaultValue: removeGps),
             RemoveDeviceAndProfileData: ParseBoolean(form["removeDeviceAndProfileData"], defaultValue: true),
             RemoveHeartRate: ParseBoolean(form["removeHeartRate"], defaultValue: false),
             RemovePower: ParseBoolean(form["removePower"], defaultValue: false),
@@ -54,6 +56,7 @@ public static class ApiEndpoints
 
             request.HttpContext.Response.Headers["Cache-Control"] = "no-store";
             request.HttpContext.Response.Headers["X-Removed-Gps-Fields"] = result.RemovedGpsFields.ToString();
+            request.HttpContext.Response.Headers["X-Removed-Location-Fields"] = result.RemovedLocationFields.ToString();
             request.HttpContext.Response.Headers["X-Removed-Identifier-Fields"] = result.RemovedIdentifierFields.ToString();
             request.HttpContext.Response.Headers["X-Removed-Heart-Rate-Fields"] = result.RemovedHeartRateFields.ToString();
             request.HttpContext.Response.Headers["X-Removed-Power-Fields"] = result.RemovedPowerFields.ToString();

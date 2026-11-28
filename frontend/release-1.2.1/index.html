@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/Fit-Privacy-Cleaner/">
+<meta name="theme-color" content="#08111f">
+<script>(function(){let lang=new URLSearchParams(location.search).get("lang");try{if(lang!=="de"&&lang!=="en")lang=localStorage.getItem("surfsapp-language");if(lang!=="de"&&lang!=="en")lang=(navigator.language||"").toLowerCase().startsWith("en")?"en":"de";if(lang==="en"){location.replace("/Fit-Privacy-Cleaner/release-1.2.1/index.en.html"+location.search+location.hash);return;}localStorage.setItem("surfsapp-language","de");}catch(e){}})();</script>
+<meta name="description" content="Garmin FIT Dateien analysieren und persönliche Daten gezielt entfernen.">
+<title>FIT Privacy Cleaner</title>
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#101d30;--panel2:#14243a;--line:rgba(169,193,221,.16);--text:#eff6ff;--muted:#a4b5ca;--soft:#71849b;--accent:#50e0ca;--accent2:#8be9db;--blue:#7bb6ff;--danger:#ff9f9f;--success:#79e1a8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(52,128,163,.22),transparent 34rem),radial-gradient(circle at 100% 16%,rgba(39,157,139,.15),transparent 30rem),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+button,input{font:inherit}
+.shell{width:min(100% - 40px,1040px);margin:0 auto;padding:38px 0 56px}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:54px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:720;letter-spacing:.02em}
+.brand-mark{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px}
+.brand-mark img{display:block;width:48px;height:48px;object-fit:contain}
+.local-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:8px 13px;font-size:12px}
+.local-pill:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(121,225,168,.1)}
+.hero{max-width:720px;margin-bottom:32px}
+.eyebrow{margin:0 0 13px;color:var(--accent);text-transform:uppercase;font-size:11px;font-weight:800;letter-spacing:.18em}
+h1{max-width:720px;margin:0;font-size:clamp(36px,6vw,62px);line-height:1.04;letter-spacing:-.045em;font-weight:760}
+h1 span{color:var(--accent)}
+.lead{max-width:610px;color:var(--muted);font-size:16px;margin:19px 0 0}
+.workspace{border:1px solid var(--line);border-radius:28px;background:linear-gradient(155deg,rgba(20,36,58,.96),rgba(12,25,42,.98));padding:clamp(18px,3.5vw,34px);box-shadow:0 26px 80px rgba(0,0,0,.28)}
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.section-head h2{margin:0;font-size:18px;letter-spacing:-.02em}
+.section-head p{color:var(--soft);margin:5px 0 0;font-size:13px}
+.step{color:var(--soft);font-size:11px;font-weight:750;letter-spacing:.12em;white-space:nowrap}
+.dropzone{min-height:214px;border:1px dashed rgba(139,233,219,.48);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px 18px;background:rgba(7,21,34,.55);cursor:pointer;transition:.18s ease;outline:none}
+.dropzone:hover,.dropzone:focus-visible,.dropzone.dragover{border-color:var(--accent);background:rgba(39,119,111,.13);transform:translateY(-1px)}
+.upload-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:16px;color:var(--accent);background:rgba(80,224,202,.1);margin-bottom:13px}
+.upload-icon svg{width:25px;height:25px}
+.dropzone strong{font-size:16px}
+.dropzone p{color:var(--muted);margin:6px 0 0;font-size:13px}
+.file-types{margin-top:14px;color:var(--soft);font-size:11px;letter-spacing:.04em}
+.file-card{display:none;align-items:center;justify-content:space-between;gap:16px;padding:15px 17px;margin-top:14px;border-radius:15px;background:rgba(7,17,31,.65);border:1px solid var(--line)}
+.file-card.visible{display:flex}
+.file-meta{min-width:0}
+.file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:680}
+.file-size{color:var(--soft);font-size:11px;margin-top:3px}
+.text-button{border:0;background:transparent;color:var(--blue);cursor:pointer;font-size:12px;padding:8px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}
+.option{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(7,17,31,.36);display:flex;gap:12px;align-items:flex-start}
+.option input{appearance:none;flex:0 0 19px;width:19px;height:19px;margin:2px 0 0;border:1px solid #59728d;border-radius:6px;background:#0d1a2b;cursor:pointer}
+.option input:checked{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 4px #10273a}
+.option label{cursor:pointer;display:block;min-width:0}
+.option strong{display:block;font-size:13px;font-weight:680}
+.option small{display:block;margin-top:4px;color:var(--soft);line-height:1.45;font-size:11px}
+.action-row{display:flex;align-items:center;gap:12px;margin-top:22px}
+.primary{border:0;border-radius:13px;padding:14px 21px;min-height:48px;background:var(--accent);color:#07211f;font-weight:800;font-size:13px;cursor:pointer;transition:.18s ease;box-shadow:0 9px 24px rgba(80,224,202,.13)}
+.primary:hover:not(:disabled){transform:translateY(-1px);background:var(--accent2)}
+.primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.secondary{border:1px solid var(--line);border-radius:13px;padding:13px 17px;min-height:48px;background:transparent;color:var(--text);font-weight:650;font-size:13px;cursor:pointer}
+.status{color:var(--muted);font-size:12px;min-height:18px}
+.status.error{color:var(--danger)}
+.status.success{color:var(--success)}
+.results{display:none;margin-top:24px;border-top:1px solid var(--line);padding-top:24px}
+.results.visible{display:block}
+.results h3{margin:0 0 5px;font-size:16px}
+.results-intro{margin:0 0 16px;color:var(--soft);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{border:1px solid var(--line);border-radius:14px;background:rgba(7,17,31,.4);padding:13px;min-width:0}
+.stat strong{display:block;font-size:21px;line-height:1.15;letter-spacing:-.035em}
+.stat span{color:var(--soft);display:block;margin-top:5px;font-size:10px}
+.checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.check{border:1px solid var(--line);border-radius:999px;padding:6px 10px;color:var(--muted);font-size:11px}
+.check.yes{border-color:rgba(121,225,168,.25);color:var(--success);background:rgba(121,225,168,.06)}
+.clean-row{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:13px}
+.clean-note{max-width:420px;color:var(--soft);font-size:11px}
+.privacy{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:start;margin-top:22px;padding:15px 16px;border-radius:15px;background:rgba(80,224,202,.055);border:1px solid rgba(80,224,202,.14)}
+textarea,select{font:inherit}
+.contribute{margin-top:20px;padding:18px;border:1px solid rgba(80,224,202,.25);border-radius:16px;background:rgba(80,224,202,.055)}
+.contribute h3{margin:0;font-size:16px}
+.contribute p{color:var(--muted);font-size:12px;margin:7px 0 13px}
+.contribute-fields{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:12px;margin:12px 0}
+.contribute-fields label{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:12px}
+.contribute-fields select,.contribute-fields textarea{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:9px;background:#0d1a2b;color:var(--text)}
+.contribute-consent{display:flex;align-items:flex-start;gap:9px;color:var(--muted);font-size:12px;margin:12px 0}
+.contribute-consent input{margin-top:3px;flex:none}
+#sendStatus{display:block;margin-top:9px}
+.honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+@media(max-width:650px){.contribute-fields{grid-template-columns:1fr}}
+.privacy svg{width:19px;height:19px;color:var(--accent);margin-top:2px}
+.privacy strong{display:block;font-size:12px}
+.privacy p{color:var(--soft);font-size:11px;margin:4px 0 0}
+footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);font-size:11px;margin-top:22px}
+@media(max-width:650px){.shell{width:min(100% - 24px,1040px);padding-top:20px}header{margin-bottom:38px}.local-pill{font-size:0;padding:10px}.local-pill:before{margin:0}.options{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.action-row{align-items:stretch;flex-direction:column}.action-row button{width:100%}footer{flex-direction:column}h1{font-size:42px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+.language-switch{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:4px;background:rgba(7,17,31,.45)}.language-switch a{display:inline-block;padding:5px 9px;border-radius:999px;color:var(--muted);font-size:11px;font-weight:800;text-decoration:none}.language-switch a.active{background:var(--accent);color:#07211f}
+
+/* FIT Cleaner 1.1 workflow refinements */
+header{margin-bottom:28px;align-items:center}
+.brand{gap:14px}
+.brand-mark{width:62px;height:62px;flex-basis:62px}
+.brand-mark img{width:62px;height:62px}
+.brand-title{display:flex;flex-direction:column;gap:2px}
+.brand-title strong{font-size:18px;line-height:1.15;letter-spacing:.045em}
+.brand-title span{font-size:11px;color:var(--soft);font-weight:500;letter-spacing:0}
+.top-tools{display:flex;align-items:center;gap:10px}
+.hero{margin-bottom:22px}
+.hero h1{font-size:clamp(30px,4.2vw,46px);line-height:1.08;letter-spacing:-.04em}
+.hero .lead{font-size:14px;margin-top:12px;max-width:650px}
+.workspace{padding:clamp(16px,3vw,30px)}
+#uploadSection{scroll-margin-top:18px}
+#privacySection,#results,#cleanedPanel{scroll-margin-top:18px}
+.dropzone{min-height:108px;display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:14px;align-items:center;justify-content:initial;text-align:left;padding:16px 20px}
+.dropzone .upload-icon{width:42px;height:42px;margin:0;border-radius:13px}
+.dropzone .upload-icon svg{width:22px;height:22px}
+.dropzone-copy{min-width:0}
+.dropzone strong{font-size:14px}
+.dropzone p{margin:2px 0 0;font-size:12px}
+.dropzone .file-types{margin:0;white-space:nowrap;font-size:10px}
+.file-card{margin-top:10px;padding:11px 14px}
+.privacy-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.privacy-section .section-head{margin:0 0 14px}
+.option{display:block;padding:12px 13px}
+.option-top{display:flex;gap:9px;align-items:flex-start}
+.option-top input{margin-top:2px;flex:0 0 18px;width:18px;height:18px}
+.option-copy{min-width:0}
+.option-copy label{display:block;cursor:pointer}
+.option-copy strong{font-size:12.5px}
+.option-copy small{font-size:11px;line-height:1.35;margin-top:2px}
+.option-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0 27px}
+.option-chips span,.preview-tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 7px;color:var(--muted);font-size:10px;line-height:1.2}
+.privacy-preview{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:14px;padding:14px 16px;border:1px solid rgba(80,224,202,.22);border-radius:15px;background:rgba(80,224,202,.055)}
+.privacy-preview strong{font-size:13px}
+.privacy-preview p{color:var(--muted);font-size:12px;margin:4px 0 0}
+.preview-tags{display:flex;flex-wrap:wrap;gap:6px}
+.preview-tag{border-color:rgba(80,224,202,.22);color:var(--accent);background:rgba(80,224,202,.04)}
+.always-strip,.preserve-strip{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:11px 14px;border:1px solid var(--line);border-radius:13px;background:rgba(7,17,31,.32)}
+.always-strip strong,.preserve-strip strong{display:block;font-size:12px}
+.always-strip p,.preserve-strip p{margin:3px 0 0;color:var(--soft);font-size:11px}
+.always-icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:8px;background:rgba(80,224,202,.1);color:var(--accent);font-size:13px;font-weight:800}
+#analyzeButton{min-width:190px}
+#runtimeStatus{margin-top:10px}
+.analysis-explanation{display:grid;gap:10px;margin-top:16px}
+.analysis-message{padding:13px 15px;border:1px solid rgba(123,182,255,.2);border-radius:14px;background:rgba(123,182,255,.055)}
+.analysis-message strong{font-size:12px}
+.analysis-message p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.analysis-item{padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:rgba(7,17,31,.3)}
+.analysis-item strong{display:block;font-size:11px}
+.analysis-item span{display:block;margin-top:3px;color:var(--soft);font-size:11px;line-height:1.4}
+.analysis-item.found strong{color:var(--accent)}
+.analysis-item.clear strong{color:var(--success)}
+.analysis-kept{padding:12px 14px;border:1px solid rgba(121,225,168,.2);border-radius:13px;background:rgba(121,225,168,.045)}
+.analysis-kept strong{font-size:12px}
+.analysis-kept p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.clean-row{align-items:center}
+.clean-note{max-width:540px;font-size:12px;line-height:1.5}
+.cleaned-panel{margin-top:20px;padding:18px;border:1px solid rgba(121,225,168,.25);border-radius:18px;background:rgba(121,225,168,.045)}
+.cleaned-heading{display:flex;align-items:center;gap:9px}
+.cleaned-heading strong{font-size:15px}
+.cleaned-heading .success-mark{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:rgba(121,225,168,.14);color:var(--success);font-weight:800}
+.cleaned-intro{margin:7px 0 0;color:var(--muted);font-size:12px}
+.cleaned-details{display:grid;gap:7px;margin:14px 0 0;padding:0;list-style:none}
+.cleaned-details li{padding:9px 11px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:11px;background:rgba(7,17,31,.28)}
+.post-clean-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.post-clean-actions button{flex:1 1 220px}
+.post-clean-note{margin:9px 0 0;color:var(--soft);font-size:11px}
+.contribute{margin-top:16px;padding:16px;border-color:rgba(80,224,202,.25)}
+.contribute h3{font-size:15px}
+.contribute .form-intro{color:var(--muted);font-size:11px;margin:5px 0 0}
+.contribute-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.contribute-fields label{font-size:11px}
+.contribute-fields select,.contribute-fields textarea,.contribute-fields input{width:100%;min-width:0;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:#0d1a2b;color:var(--text);font:inherit}
+.contribute-fields input::placeholder,.contribute-fields textarea::placeholder{color:var(--soft)}
+.field-hint{display:block;color:var(--accent);font-size:10px;font-weight:650;margin-top:2px}
+.form-privacy-note{margin:9px 0;color:var(--soft);font-size:11px;line-height:1.45}
+.contribute-consent{font-size:11px;line-height:1.45}
+.contribute-consent input{accent-color:var(--accent)}
+#sendFitButton{min-width:230px}
+#sendStatus{font-size:11px}
+@media(max-width:650px){
+ .shell{padding-top:16px}
+ header{margin-bottom:24px}
+ .brand-mark{width:54px;height:54px;flex-basis:54px}
+ .brand-mark img{width:54px;height:54px}
+ .brand-title strong{font-size:15px}
+ .brand-title span{font-size:10px}
+ .top-tools{gap:6px}
+ .local-pill{display:none}
+ .hero{margin-bottom:18px}
+ .hero h1{font-size:34px}
+ .dropzone{min-height:92px;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:13px}
+ .dropzone .upload-icon{width:38px;height:38px}
+ .dropzone .file-types{grid-column:2;margin-top:-3px}
+ .options,.analysis-grid{grid-template-columns:1fr}
+ .option-chips{margin-left:0}
+ .contribute-fields{grid-template-columns:1fr}
+ .post-clean-actions{flex-direction:column}
+ .post-clean-actions button{width:100%}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  
+<header>
+  <div class="brand">
+    <div class="brand-mark"><img src="SurfsApp_Symbol_1.png" alt="SurfsApp"></div>
+    <div class="brand-title"><strong>FIT PRIVACY CLEANER</strong><span>FIT Dateien lokal prüfen und bereinigen</span></div>
+  </div>
+  <div class="top-tools">
+    <div class="language-switch" role="group" aria-label="Sprache wählen">
+      <a class="active" href="/Fit-Privacy-Cleaner/release-1.2.1/?lang=de" onclick="localStorage.setItem('surfsapp-language','de')">DE</a>
+      <a href="/Fit-Privacy-Cleaner/release-1.2.1/index.en.html" onclick="localStorage.setItem('surfsapp-language','en')">EN</a>
+    </div>
+    <div class="local-pill">Keine Kontoregistrierung</div>
+  </div>
+</header>
+<section class="hero">
+  <p class="eyebrow">Deine Aktivität. Deine Daten.</p>
+  <h1>Teile deine Leistung.<br><span>Nicht deine Privatsphäre.</span></h1>
+  <p class="lead">Du entscheidest, welche persönlichen Informationen aus deiner FIT Datei entfernt werden. Die Analyse und Bereinigung laufen lokal. Übermittelt wird nur, was du ausdrücklich freigibst.</p>
+</section>
+<section class="workspace" aria-label="FIT Datei bereinigen">
+  <section id="uploadSection">
+    <div class="section-head">
+      <div><h2 id="upload-title">FIT Datei auswählen</h2><p>Eine Aktivitätsdatei im FIT Format, maximal 50 MB.</p></div>
+      <span class="step">01 / DATEI</span>
+    </div>
+    <input id="fileInput" type="file" accept=".fit,application/octet-stream" hidden>
+    <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="FIT Datei auswählen oder hier ablegen">
+      <div class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-3"/></svg></div>
+      <div class="dropzone-copy"><strong>Datei auswählen oder hier ablegen</strong><p>Die Auswahl startet noch keine Analyse.</p></div>
+      <span class="file-types">.FIT DATEI · MAX. 50 MB</span>
+    </div>
+    <div id="fileCard" class="file-card" aria-live="polite">
+      <div class="file-meta"><div id="fileName" class="file-name"></div><div id="fileSize" class="file-size"></div></div>
+      <button id="removeFile" class="text-button" type="button">Entfernen</button>
+    </div>
+  </section>
+  <section id="privacySection" class="privacy-section" tabindex="-1">
+    <div class="section-head">
+      <div><h2>Welche Informationen sollen entfernt werden?</h2>Aktiviere die Bereiche, die aus der FIT Datei entfernt werden sollen.</div>
+      <span class="step">02 / DATENSCHUTZ</span>
+    </div>
+    <div class="options">
+      <article class="option"><div class="option-top"><input id="removeDevice" type="checkbox" checked><div class="option-copy"><label for="removeDevice"><strong>Geräte und persönliche Kennungen</strong><small>Entfernt Geräteidentität und persönliche Profilangaben.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Seriennummer</span><span>Hersteller und Modell</span><span>Geräte ID</span><span>Benutzername und Profil</span><span>Dateiersteller</span><span>E Mail und Kontaktdaten</span></div></article>
+      <article class="option"><div class="option-top"><input id="removeGps" type="checkbox"><div class="option-copy"><label for="removeGps"><strong>GPS Streckenverlauf</strong><small>Entfernt GPS Koordinaten der aufgezeichneten Trackpunkte.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Trackpunkte</span><span>Breiten und Längengrad</span></div></article>
+      <article class="option"><div class="option-top"><input id="removeLocation" type="checkbox"><div class="option-copy"><label for="removeLocation"><strong>Standort Start und Ziel</strong><small>Entfernt gespeicherte Start und Zielpositionen aus Sessions und Runden.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Startposition</span><span>Zielposition</span><span>Rundenpositionen</span></div></article>
+      <article class="option"><div class="option-top"><input id="removeHeartRate" type="checkbox"><div class="option-copy"><label for="removeHeartRate"><strong>Herzfrequenz</strong><small>Entfernt Messwerte sowie Durchschnitts und Maximalwerte.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Herzfrequenzwerte</span><span>Durchschnitt</span><span>Maximum</span></div></article>
+      <article class="option"><div class="option-top"><input id="removePower" type="checkbox"><div class="option-copy"><label for="removePower"><strong>Leistung</strong><small>Entfernt Leistungsmesswerte und berechnete Leistungswerte.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Leistungswerte</span><span>Durchschnitt und Maximum</span><span>Normalized Power</span></div></article>
+      <article class="option"><div class="option-top"><input id="removeCadence" type="checkbox"><div class="option-copy"><label for="removeCadence"><strong>Kadenz</strong><small>Entfernt Kadenzwerte sowie Durchschnitts und Maximalwerte.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Kadenzwerte</span><span>Durchschnitt</span><span>Maximum</span></div></article>
+      <article class="option"><div class="option-top"><input id="removeDeveloper" type="checkbox"><div class="option-copy"><label for="removeDeveloper"><strong>App und eigene Zusatzfelder</strong><small>Können Sprungwerte und eigene Messwerte aus Apps oder Zubehör enthalten. Sie bleiben erhalten, solange du das Entfernen nicht auswählst.</small></label></div></div><div class="option-chips" aria-label="Beispiele"><span>Sprunghöhe</span><span>Sprunganzahl</span><span>Halsendaten</span><span>Connect IQ Felder</span><span>Eigene Messwerte</span></div></article>
+    </div>
+    <div class="privacy-preview" aria-live="polite"><div><strong>Diese Bereiche werden entfernt</strong><p id="privacyPreviewText">Deine Auswahl wird hier zusammengefasst.</p></div><div id="privacyPreviewList" class="preview-tags"></div></div>
+    <div class="action-row"><button id="analyzeButton" class="primary" type="button" disabled>Datei analysieren</button><button id="resetButton" class="secondary" type="button">Zurücksetzen</button><span id="status" class="status" role="status" aria-live="polite"></span></div>
+    <div id="runtimeStatus" class="status" role="status" aria-live="polite">FIT Prozessor wird initialisiert …</div>
+  </section>
+  <section id="results" class="results" aria-labelledby="analysis-title">
+    <h3 id="analysis-title">Das steckt in deiner FIT Datei</h3>
+    <p class="results-intro">Die Analyse liest die Datei nur aus. Es wird noch nichts verändert oder übertragen.</p>
+    <div id="stats" class="stats"></div><div id="checks" class="checks"></div><div id="analysisExplanation" class="analysis-explanation"></div>
+    <div class="clean-row"><div class="clean-note">Passt die Auswahl? Mit „Jetzt bereinigen“ wird eine neue FIT Datei erstellt und anschließend erneut geprüft. Deine Originaldatei bleibt unverändert.</div><button id="cleanButton" class="primary" type="button" disabled>Jetzt bereinigen</button></div>
+    <section id="cleanedPanel" class="cleaned-panel" hidden>
+      <div class="cleaned-heading"><span class="success-mark">✓</span><strong>Bereinigung abgeschlossen</strong></div>
+      <p id="cleanSummaryText" class="cleaned-intro">Die bereinigte FIT Datei wurde lokal erstellt. Es wurde noch nichts übermittelt.</p>
+      <ul id="cleanedDetails" class="cleaned-details"></ul>
+      <div class="post-clean-actions"><button id="downloadButton" class="secondary" type="button">Bereinigte Datei herunterladen</button><button id="jumpToSendButton" class="primary" type="button">Datei an SurfsApp senden</button></div>
+      <p class="post-clean-note">Die Datei wird erst übertragen, wenn du auf „Bereinigte FIT Datei senden“ klickst. Name und E Mail sind optional.</p>
+      <section id="contributePanel" class="contribute" aria-labelledby="contributeTitle">
+        <h3 id="contributeTitle">Zur Weiterentwicklung beitragen</h3>
+        <p class="form-intro">Deine bereinigte Datei hilft, Funktionen wie die Erkennung von Halsen, Sprüngen und Wellenritten zu verbessern.</p>
+        <form id="donateForm">
+          <div class="contribute-fields">
+            <label for="donateSport">Sportart <span class="field-hint">Bitte auswählen</span><select id="donateSport" required><option value="" selected disabled>Sportart auswählen</option><option value="Windsurfen">Windsurfen</option><option value="Wingen">Wingen</option><option value="Surfen">Surfen</option><option value="Sonstiges">Sonstiges</option></select></label>
+            <label for="donateComment">Was soll ich mir ansehen? <span class="field-hint">Optional, aber hilfreich</span><textarea id="donateComment" rows="2" maxlength="1000" placeholder="Zum Beispiel: Pushloop, Backloop oder eine spezielle Halse"></textarea></label>
+            <label for="donateName">Dein Name <span class="field-hint">Optional</span><input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Vorname oder Kürzel"></label>
+            <label for="donateContact">Kontakt E Mail <span class="field-hint">Optional</span><input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com"></label>
+          </div>
+          <p class="form-privacy-note">Name und E Mail sind optional. Falls du Angaben machst, werden sie separat übermittelt und nicht in die FIT Datei geschrieben.</p>
+          <p class="form-privacy-note">Mit Klick auf „Bereinigte FIT Datei senden“ wird die bereinigte Datei an die SurfsApp Entwicklung übertragen. GPS Trackpunkte und Start und Zielpositionen bleiben erhalten, solange du deren Entfernung oben nicht auswählst.</p>
+          <div class="action-row"><button id="sendFitButton" class="primary" type="submit" disabled>Bereinigte FIT Datei senden</button><span id="sendStatus" class="status" role="status" aria-live="polite"></span></div>
+          <div class="honeypot" aria-hidden="true"><label for="donateWebsite">Website<input id="donateWebsite" tabindex="-1" autocomplete="off"></label></div>
+        </form>
+      </section>
+    </section>
+  </section>
+
+    <div class="privacy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <div>
+        <strong>Lokale Verarbeitung und freiwillige Einsendung</strong>
+        <p>Analyse und Bereinigung laufen lokal in deinem Browser. Die Originaldatei wird nicht übertragen. Nur wenn du nach der Bereinigung ausdrücklich zustimmst, wird die bereinigte FIT Datei an die SurfsApp Entwicklung gesendet.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.2.1</span> · Build <span id="appBuild">wird geladen</span></span>
+    <span>Die Originaldatei bleibt unverändert.</span>
+  </footer>
+</main>
+
+<div id="app" hidden aria-hidden="true"></div>
+<script src="_framework/blazor.webassembly.js" autostart="false"></script>
+<script src="cleaner-flow.js?v=__BUILD_SHA__"></script>
+</body>
+</html>

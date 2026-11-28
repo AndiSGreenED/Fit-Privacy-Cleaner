@@ -10,6 +10,7 @@ public sealed record FitAnalysis(
     int LapCount,
     int SessionCount,
     bool HasGps,
+    bool HasLocation,
     bool HasHeartRate,
     bool HasPower,
     bool HasCadence,
@@ -24,11 +25,13 @@ public sealed record CleanOptions(
     bool RemoveHeartRate = false,
     bool RemovePower = false,
     bool RemoveCadence = false,
-    bool RemoveDeveloperData = false);
+    bool RemoveDeveloperData = false,
+    bool RemoveLocation = false);
 
 public sealed record CleanResult(
     byte[] FileBytes,
     int RemovedGpsFields,
+    int RemovedLocationFields,
     int RemovedIdentifierFields,
     int RemovedHeartRateFields,
     int RemovedPowerFields,
@@ -123,7 +126,12 @@ public static class FitFileProcessor
             RecordCount: CountMessages(messages, "record"),
             LapCount: CountMessages(messages, "lap"),
             SessionCount: CountMessages(messages, "session"),
-            HasGps: messages.SelectMany(message => message.Fields).Any(field => IsGpsField(field.Name)),
+            HasGps: messages.Any(message =>
+                Normalize(message.Name) == "record" &&
+                message.Fields.Any(field => IsGpsField(field.Name))),
+            HasLocation: messages.Any(message =>
+                Normalize(message.Name) != "record" &&
+                message.Fields.Any(field => IsGpsField(field.Name))),
             HasHeartRate: HasField(messages, "heartrate"),
             HasPower: HasField(messages, "power"),
             HasCadence: HasField(messages, "cadence"),
@@ -140,6 +148,7 @@ public static class FitFileProcessor
 
         var cleanedMessages = new List<Mesg>(sourceMessages.Count);
         var removedGpsFields = 0;
+        var removedLocationFields = 0;
         var removedIdentifierFields = 0;
         var removedHeartRateFields = 0;
         var removedPowerFields = 0;
@@ -205,9 +214,15 @@ public static class FitFileProcessor
                     continue;
                 }
 
-                if (options.RemoveGps && IsGpsField(field.Name))
+                if (options.RemoveGps && messageName == "record" && IsGpsField(field.Name))
                 {
                     removedGpsFields++;
+                    continue;
+                }
+
+                if (options.RemoveLocation && messageName != "record" && IsGpsField(field.Name))
+                {
+                    removedLocationFields++;
                     continue;
                 }
 
@@ -258,9 +273,17 @@ public static class FitFileProcessor
         EnsureFileIdFirst(verifiedMessages);
 
         if (options.RemoveGps &&
-            verifiedMessages.SelectMany(message => message.Fields).Any(field => IsGpsField(field.Name)))
+            verifiedMessages.Where(message => Normalize(message.Name) == "record")
+                .SelectMany(message => message.Fields).Any(field => IsGpsField(field.Name)))
         {
-            throw new FitFileException("Die GPS Koordinaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+            throw new FitFileException("Die GPS Trackpunkte konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+        }
+
+        if (options.RemoveLocation &&
+            verifiedMessages.Where(message => Normalize(message.Name) != "record")
+                .SelectMany(message => message.Fields).Any(field => IsGpsField(field.Name)))
+        {
+            throw new FitFileException("Die Start und Zielstandorte konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
         }
 
         if (options.RemoveDeveloperData &&
@@ -312,6 +335,7 @@ public static class FitFileProcessor
         return new CleanResult(
             FileBytes: encodedBytes,
             RemovedGpsFields: removedGpsFields,
+            RemovedLocationFields: removedLocationFields,
             RemovedIdentifierFields: removedIdentifierFields,
             RemovedHeartRateFields: removedHeartRateFields,
             RemovedPowerFields: removedPowerFields,

@@ -51,10 +51,21 @@ jobs:
         run: |
           mkdir -p artifacts/publish/wwwroot
           cp -a frontend/. artifacts/publish/wwwroot/
-      - name: Add version metadata
+      - name: Add version metadata and cache-busting build id
         run: |
           APP_VERSION="$(cat VERSION)"
           BUILD_SHA="${GITHUB_SHA:0:7}"
+          RELEASE_DIR="artifacts/publish/wwwroot/release-${APP_VERSION}"
+          test -f "$RELEASE_DIR/index.html"
+          test -f "$RELEASE_DIR/index.en.html"
+          grep -Fq "/release-${APP_VERSION}/" artifacts/publish/wwwroot/index.html
+          for PAGE in "$RELEASE_DIR/index.html" "$RELEASE_DIR/index.en.html"; do
+            sed -i "s/__BUILD_SHA__/$BUILD_SHA/g" "$PAGE"
+            if grep -q "__BUILD_SHA__" "$PAGE"; then
+              echo "Build id placeholder was not replaced in $PAGE"
+              exit 1
+            fi
+          done
           cat > artifacts/publish/wwwroot/version.json <<EOF
           {
             "version": "$APP_VERSION",

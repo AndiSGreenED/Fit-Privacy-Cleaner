@@ -68,6 +68,12 @@ static byte[] CreateTestActivity()
     device.SetSerialNumber(987654321);
     device.SetTimestamp(new Dynastream.Fit.DateTime(1500));
 
+    var session = new SessionMesg();
+    session.SetStartPositionLat(111111);
+    session.SetStartPositionLong(222222);
+    session.SetEndPositionLat(333333);
+    session.SetEndPositionLong(444444);
+
     var record = new RecordMesg();
     record.SetTimestamp(new Dynastream.Fit.DateTime(2000));
     record.SetPositionLat(123456);
@@ -97,6 +103,7 @@ static byte[] CreateTestActivity()
     encoder.Write(jibeCountDescription);
     encoder.Write(profile);
     encoder.Write(device);
+    encoder.Write(session);
     encoder.Write(record);
     encoder.Close();
 
@@ -115,7 +122,8 @@ if (!string.IsNullOrWhiteSpace(fixtureOutputPath))
 var originalAnalysis = FitFileProcessor.Analyze(original);
 
 Require(originalAnalysis.RecordCount == 1, "Expected one record in generated activity.");
-Require(originalAnalysis.HasGps, "Expected GPS coordinates in generated activity.");
+Require(originalAnalysis.HasGps, "Expected GPS track point coordinates in generated activity.");
+Require(originalAnalysis.HasLocation, "Expected session start and finish locations in generated activity.");
 Require(originalAnalysis.HasHeartRate, "Expected heart rate in generated activity.");
 Require(originalAnalysis.HasPower, "Expected power in generated activity.");
 Require(originalAnalysis.HasCadence, "Expected cadence in generated activity.");
@@ -125,11 +133,12 @@ Require(originalAnalysis.UserProfileMessageCount == 1, "Expected one user profil
 
 var cleaned = FitFileProcessor.Clean(
     original,
-    new CleanOptions(RemoveGps: true, RemoveDeviceAndProfileData: true));
+    new CleanOptions(RemoveGps: true, RemoveDeviceAndProfileData: true, RemoveLocation: true));
 
 var cleanedAnalysis = FitFileProcessor.Analyze(cleaned.FileBytes);
 
-Require(!cleanedAnalysis.HasGps, "GPS coordinates remain after cleaning.");
+Require(!cleanedAnalysis.HasGps, "GPS track point coordinates remain after cleaning.");
+Require(!cleanedAnalysis.HasLocation, "Start or finish location coordinates remain after cleaning.");
 Require(cleanedAnalysis.DeviceInfoMessageCount == 0, "Device information remains after cleaning.");
 Require(cleanedAnalysis.UserProfileMessageCount == 0, "User profile remains after cleaning.");
 Require(cleanedAnalysis.RecordCount == 1, "Record message was lost during cleaning.");
@@ -151,7 +160,8 @@ var preservedDeveloperIdMessage = DecodeMessages(cleaned.FileBytes)
 var preservedDeveloperId = new DeveloperDataIdMesg(preservedDeveloperIdMessage);
 Require(preservedDeveloperId.GetNumApplicationId() == 16, "Developer app identity was lost with the custom field definition.");
 Require(cleaned.RemovedDeveloperFields == 0, "Developer fields should not be counted as removed by default.");
-Require(cleaned.RemovedGpsFields >= 2, "Expected latitude and longitude to be removed.");
+Require(cleaned.RemovedGpsFields >= 2, "Expected track latitude and longitude to be removed.");
+Require(cleaned.RemovedLocationFields >= 4, "Expected session start and finish coordinates to be removed.");
 Require(cleaned.RemovedIdentifierFields > 0, "Expected identifier fields to be removed.");
 Require(cleaned.OutputMessageCount > 0, "Cleaned FIT file contains no messages.");
 
@@ -159,8 +169,25 @@ var preservedGps = FitFileProcessor.Clean(
     original,
     new CleanOptions(RemoveGps: false, RemoveDeviceAndProfileData: true));
 var preservedGpsAnalysis = FitFileProcessor.Analyze(preservedGps.FileBytes);
-Require(preservedGpsAnalysis.HasGps, "GPS should remain when GPS removal is disabled.");
+Require(preservedGpsAnalysis.HasGps, "GPS track points should remain when GPS removal is disabled.");
+Require(preservedGpsAnalysis.HasLocation, "Start and finish locations should remain when location removal is disabled.");
 Require(preservedGpsAnalysis.DeveloperFieldCount == 3, "All custom developer fields should remain when their removal is disabled.");
+
+var gpsOnly = FitFileProcessor.Clean(
+    original,
+    new CleanOptions(RemoveGps: true, RemoveDeviceAndProfileData: false, RemoveLocation: false));
+var gpsOnlyAnalysis = FitFileProcessor.Analyze(gpsOnly.FileBytes);
+Require(!gpsOnlyAnalysis.HasGps, "GPS track points were not removed independently.");
+Require(gpsOnlyAnalysis.HasLocation, "Removing GPS track points must preserve start and finish locations.");
+Require(gpsOnly.RemovedLocationFields == 0, "GPS only removal unexpectedly removed location fields.");
+
+var locationOnly = FitFileProcessor.Clean(
+    original,
+    new CleanOptions(RemoveGps: false, RemoveDeviceAndProfileData: false, RemoveLocation: true));
+var locationOnlyAnalysis = FitFileProcessor.Analyze(locationOnly.FileBytes);
+Require(locationOnlyAnalysis.HasGps, "Removing start and finish locations must preserve GPS track points.");
+Require(!locationOnlyAnalysis.HasLocation, "Start and finish locations were not removed independently.");
+Require(locationOnly.RemovedGpsFields == 0, "Location only removal unexpectedly removed GPS track fields.");
 
 var removedPrivateMetrics = FitFileProcessor.Clean(
     original,
