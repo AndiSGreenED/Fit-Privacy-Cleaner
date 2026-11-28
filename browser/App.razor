@@ -15,6 +15,9 @@
         string FileBase64,
         int RemovedGpsFields,
         int RemovedIdentifierFields,
+        int RemovedHeartRateFields,
+        int RemovedPowerFields,
+        int RemovedCadenceFields,
         int RemovedMetadataMessages,
         int RemovedDeveloperFields,
         int OriginalMessageCount,
@@ -39,19 +42,33 @@
     }
 
     [JSInvokable]
-    public string Clean(string fileBase64, bool removeGps, bool removeDeviceAndProfileData)
+    public string Clean(
+        string fileBase64,
+        bool removeGps,
+        bool removeDeviceAndProfileData,
+        bool removeHeartRate,
+        bool removePower,
+        bool removeCadence,
+        bool removeDeveloperData)
     {
         var bytes = Convert.FromBase64String(fileBase64);
         var result = FitFileProcessor.Clean(
             bytes,
             new CleanOptions(
                 RemoveGps: removeGps,
-                RemoveDeviceAndProfileData: removeDeviceAndProfileData));
+                RemoveDeviceAndProfileData: removeDeviceAndProfileData,
+                RemoveHeartRate: removeHeartRate,
+                RemovePower: removePower,
+                RemoveCadence: removeCadence,
+                RemoveDeveloperData: removeDeveloperData));
 
         return JsonSerializer.Serialize(new CleanResponse(
             FileBase64: Convert.ToBase64String(result.FileBytes),
             RemovedGpsFields: result.RemovedGpsFields,
             RemovedIdentifierFields: result.RemovedIdentifierFields,
+            RemovedHeartRateFields: result.RemovedHeartRateFields,
+            RemovedPowerFields: result.RemovedPowerFields,
+            RemovedCadenceFields: result.RemovedCadenceFields,
             RemovedMetadataMessages: result.RemovedMetadataMessages,
             RemovedDeveloperFields: result.RemovedDeveloperFields,
             OriginalMessageCount: result.OriginalMessageCount,
