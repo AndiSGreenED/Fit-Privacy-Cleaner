@@ -20,12 +20,19 @@ public sealed record FitAnalysis(
 
 public sealed record CleanOptions(
     bool RemoveGps,
-    bool RemoveDeviceAndProfileData);
+    bool RemoveDeviceAndProfileData,
+    bool RemoveHeartRate = false,
+    bool RemovePower = false,
+    bool RemoveCadence = false,
+    bool RemoveDeveloperData = false);
 
 public sealed record CleanResult(
     byte[] FileBytes,
     int RemovedGpsFields,
     int RemovedIdentifierFields,
+    int RemovedHeartRateFields,
+    int RemovedPowerFields,
+    int RemovedCadenceFields,
     int RemovedMetadataMessages,
     int RemovedDeveloperFields,
     int OriginalMessageCount,
@@ -72,6 +79,41 @@ public static class FitFileProcessor
         "userid"
     ];
 
+    private static readonly HashSet<string> HeartRateFields =
+    [
+        "heartrate",
+        "avgheartrate",
+        "maxheartrate",
+        "minheartrate",
+        "restingheartrate"
+    ];
+
+    private static readonly HashSet<string> PowerFields =
+    [
+        "power",
+        "avgpower",
+        "maxpower",
+        "normalizedpower",
+        "leftpowerphase",
+        "rightpowerphase",
+        "leftpowerphasepeak",
+        "rightpowerphasepeak",
+        "avgleftpowerphase",
+        "avgrightpowerphase",
+        "maxleftpowerphase",
+        "maxrightpowerphase"
+    ];
+
+    private static readonly HashSet<string> CadenceFields =
+    [
+        "cadence",
+        "fractionalcadence",
+        "avgcadence",
+        "maxcadence",
+        "avgfractionalcadence",
+        "maxfractionalcadence"
+    ];
+
     public static FitAnalysis Analyze(byte[] fileBytes)
     {
         var messages = DecodeMessages(fileBytes);
@@ -100,8 +142,14 @@ public static class FitFileProcessor
         var cleanedMessages = new List<Mesg>(sourceMessages.Count);
         var removedGpsFields = 0;
         var removedIdentifierFields = 0;
+        var removedHeartRateFields = 0;
+        var removedPowerFields = 0;
+        var removedCadenceFields = 0;
         var removedMetadataMessages = 0;
         var removedDeveloperFields = 0;
+        var originalDeveloperFieldCount = sourceMessages.Sum(message => message.DeveloperFields.Count());
+        var originalDeveloperMetadataCount = sourceMessages.Count(message =>
+            DeveloperMetadataMessages.Contains(Normalize(message.Name)));
 
         foreach (var source in sourceMessages)
         {
@@ -109,10 +157,10 @@ public static class FitFileProcessor
             var isDeveloperMetadata = DeveloperMetadataMessages.Contains(messageName);
             var isDeviceOrProfileMetadata = DeviceAndProfileMessages.Contains(messageName);
 
-            if (isDeveloperMetadata || (options.RemoveDeviceAndProfileData && isDeviceOrProfileMetadata))
+            if ((options.RemoveDeveloperData && isDeveloperMetadata) ||
+                (options.RemoveDeviceAndProfileData && isDeviceOrProfileMetadata))
             {
                 removedMetadataMessages++;
-                removedDeveloperFields += source.DeveloperFields.Count();
                 continue;
             }
 
@@ -121,9 +169,21 @@ public static class FitFileProcessor
                 LocalNum = source.LocalNum
             };
 
-            // Only native FIT fields are copied. Developer fields are deliberately
-            // omitted because arbitrary extension data may contain personal values.
-            removedDeveloperFields += source.DeveloperFields.Count();
+            if (options.RemoveDeveloperData)
+            {
+                removedDeveloperFields += source.DeveloperFields.Count();
+            }
+            else
+            {
+                // Preserve application specific fields, including their decoded values.
+                foreach (var developerField in source.DeveloperFields)
+                {
+                    if (developerField.GetNumValues() > 0)
+                    {
+                        target.SetDeveloperField(new DeveloperField(developerField));
+                    }
+                }
+            }
 
             foreach (var field in source.Fields)
             {
@@ -146,6 +206,24 @@ public static class FitFileProcessor
                     continue;
                 }
 
+                if (options.RemoveHeartRate && IsHeartRateField(field.Name))
+                {
+                    removedHeartRateFields++;
+                    continue;
+                }
+
+                if (options.RemovePower && IsPowerField(field.Name))
+                {
+                    removedPowerFields++;
+                    continue;
+                }
+
+                if (options.RemoveCadence && IsCadenceField(field.Name))
+                {
+                    removedCadenceFields++;
+                    continue;
+                }
+
                 target.SetField(new Field(field));
             }
 
@@ -164,9 +242,24 @@ public static class FitFileProcessor
             throw new FitFileException("Die GPS Koordinaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
         }
 
-        if (verifiedMessages.Any(message => DeveloperMetadataMessages.Contains(Normalize(message.Name))))
+        if (options.RemoveDeveloperData &&
+            (verifiedMessages.Any(message => DeveloperMetadataMessages.Contains(Normalize(message.Name))) ||
+             verifiedMessages.Sum(message => message.DeveloperFields.Count()) > 0))
         {
-            throw new FitFileException("Entwickler Metadaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+            throw new FitFileException("Entwicklerdaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+        }
+
+        if (!options.RemoveDeveloperData)
+        {
+            var verifiedDeveloperFieldCount = verifiedMessages.Sum(message => message.DeveloperFields.Count());
+            var verifiedDeveloperMetadataCount = verifiedMessages.Count(message =>
+                DeveloperMetadataMessages.Contains(Normalize(message.Name)));
+
+            if (verifiedDeveloperFieldCount != originalDeveloperFieldCount ||
+                verifiedDeveloperMetadataCount != originalDeveloperMetadataCount)
+            {
+                throw new FitFileException("App und eigene Zusatzfelder konnten nicht vollständig erhalten werden. Es wurde keine Datei bereitgestellt.");
+            }
         }
 
         if (options.RemoveDeviceAndProfileData &&
@@ -175,10 +268,31 @@ public static class FitFileProcessor
             throw new FitFileException("Die Geräte und Profilinformationen konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
         }
 
+        if (options.RemoveHeartRate &&
+            verifiedMessages.SelectMany(message => message.Fields).Any(field => IsHeartRateField(field.Name)))
+        {
+            throw new FitFileException("Herzfrequenzdaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+        }
+
+        if (options.RemovePower &&
+            verifiedMessages.SelectMany(message => message.Fields).Any(field => IsPowerField(field.Name)))
+        {
+            throw new FitFileException("Leistungsdaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+        }
+
+        if (options.RemoveCadence &&
+            verifiedMessages.SelectMany(message => message.Fields).Any(field => IsCadenceField(field.Name)))
+        {
+            throw new FitFileException("Kadenzdaten konnten nicht vollständig entfernt werden. Es wurde keine Datei bereitgestellt.");
+        }
+
         return new CleanResult(
             FileBytes: encodedBytes,
             RemovedGpsFields: removedGpsFields,
             RemovedIdentifierFields: removedIdentifierFields,
+            RemovedHeartRateFields: removedHeartRateFields,
+            RemovedPowerFields: removedPowerFields,
+            RemovedCadenceFields: removedCadenceFields,
             RemovedMetadataMessages: removedMetadataMessages,
             RemovedDeveloperFields: removedDeveloperFields,
             OriginalMessageCount: sourceMessages.Count,
@@ -280,6 +394,15 @@ public static class FitFileProcessor
 
     private static bool IsIdentifierField(string? fieldName) =>
         IdentifierFields.Contains(Normalize(fieldName));
+
+    private static bool IsHeartRateField(string? fieldName) =>
+        HeartRateFields.Contains(Normalize(fieldName));
+
+    private static bool IsPowerField(string? fieldName) =>
+        PowerFields.Contains(Normalize(fieldName));
+
+    private static bool IsCadenceField(string? fieldName) =>
+        CadenceFields.Contains(Normalize(fieldName));
 
     private static string Normalize(string? value) =>
         new((value ?? string.Empty)
