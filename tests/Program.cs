@@ -118,6 +118,10 @@ var preservedJumpField = DecodeMessages(cleaned.FileBytes)
     .Single();
 Require(preservedJumpField.Name == "jump_height", "Custom jump field definition was not preserved.");
 Require(Convert.ToUInt16(preservedJumpField.GetValue()) == 142, "Custom jump field value was not preserved.");
+var preservedDeveloperId = DecodeMessages(cleaned.FileBytes)
+    .OfType<DeveloperDataIdMesg>()
+    .Single();
+Require(preservedDeveloperId.GetNumApplicationId() == 16, "Developer app identity was lost with the custom field definition.");
 Require(cleaned.RemovedDeveloperFields == 0, "Developer fields should not be counted as removed by default.");
 Require(cleaned.RemovedGpsFields >= 2, "Expected latitude and longitude to be removed.");
 Require(cleaned.RemovedIdentifierFields > 0, "Expected identifier fields to be removed.");
