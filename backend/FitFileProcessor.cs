@@ -211,7 +211,14 @@ public static class FitFileProcessor
                     continue;
                 }
 
-                if (options.RemoveDeviceAndProfileData && IsIdentifierField(field.Name))
+                var isDeveloperApplicationId =
+                    messageName == "developerdataid" &&
+                    Normalize(field.Name) == "applicationid" &&
+                    !options.RemoveDeveloperData;
+
+                if (options.RemoveDeviceAndProfileData &&
+                    IsIdentifierField(field.Name) &&
+                    !isDeveloperApplicationId)
                 {
                     removedIdentifierFields++;
                     continue;
