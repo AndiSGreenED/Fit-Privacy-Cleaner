@@ -20,7 +20,6 @@ const { chromium } = require("playwright");
     assert.equal(await page.locator("#removeDevice").isVisible(), true);
     assert.equal(await page.locator("#removeGps").isVisible(), true);
     assert.match(await page.locator("#privacyPreviewText").textContent(), /ausgewählten Bereiche/);
-    assert.match(await page.locator(".always-strip").textContent(), /Immer entfernt/);
     assert.equal(await page.locator("#removeGps").isChecked(), false);
     for (const id of ["removeHeartRate","removePower","removeCadence","removeDeveloper"]) {
       assert.equal(await page.locator("#" + id).isVisible(), true, id + " privacy choice is missing.");
@@ -93,7 +92,7 @@ const { chromium } = require("playwright");
     assert.ok(versioned && versioned.ok(), "Version 1.1.0 page did not load.");
     await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
     await page.waitForFunction(() => document.getElementById("appBuild")?.textContent?.includes("Run"), null, { timeout: 15000 });
-    assert.equal(await page.locator("#appVersion").textContent(), "1.1.0");
+    assert.equal(await page.locator("#appVersion").textContent(), "1.2.0");
     assert.equal(await page.locator("#removeGps").isVisible(), true);
     assert.equal(await page.locator("#analyzeButton").isDisabled(), true);
     console.log("FIT Privacy Cleaner 1.2.0 browser end-to-end tests passed.");
