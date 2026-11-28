@@ -146,9 +146,9 @@ Require(preservedDeveloperFields.ContainsKey("jump_count"), "Custom jump count f
 Require(Convert.ToByte(preservedDeveloperFields["jump_count"].GetValue()) == 4, "Custom jump count value was not preserved.");
 Require(preservedDeveloperFields.ContainsKey("jibe_count"), "Custom jibe field definition was not preserved.");
 Require(Convert.ToByte(preservedDeveloperFields["jibe_count"].GetValue()) == 6, "Custom jibe count value was not preserved.");
-var preservedDeveloperId = DecodeMessages(cleaned.FileBytes)
-    .OfType<DeveloperDataIdMesg>()
-    .Single();
+var preservedDeveloperIdMessage = DecodeMessages(cleaned.FileBytes)
+    .Single(message => message.Name.Equals("developerdataid", StringComparison.OrdinalIgnoreCase));
+var preservedDeveloperId = new DeveloperDataIdMesg(preservedDeveloperIdMessage);
 Require(preservedDeveloperId.GetNumApplicationId() == 16, "Developer app identity was lost with the custom field definition.");
 Require(cleaned.RemovedDeveloperFields == 0, "Developer fields should not be counted as removed by default.");
 Require(cleaned.RemovedGpsFields >= 2, "Expected latitude and longitude to be removed.");
