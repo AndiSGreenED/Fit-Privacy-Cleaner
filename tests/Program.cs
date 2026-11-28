@@ -45,6 +45,20 @@ static byte[] CreateTestActivity()
     fieldDescription.SetFieldName(0, "jump_height");
     fieldDescription.SetUnits(0, "cm");
 
+    var jumpCountDescription = new FieldDescriptionMesg();
+    jumpCountDescription.SetDeveloperDataIndex(0);
+    jumpCountDescription.SetFieldDefinitionNumber(1);
+    jumpCountDescription.SetFitBaseTypeId(FitBaseType.Uint8);
+    jumpCountDescription.SetFieldName(0, "jump_count");
+    jumpCountDescription.SetUnits(0, "count");
+
+    var jibeCountDescription = new FieldDescriptionMesg();
+    jibeCountDescription.SetDeveloperDataIndex(0);
+    jibeCountDescription.SetFieldDefinitionNumber(2);
+    jibeCountDescription.SetFitBaseTypeId(FitBaseType.Uint8);
+    jibeCountDescription.SetFieldName(0, "jibe_count");
+    jibeCountDescription.SetUnits(0, "count");
+
     var profile = new UserProfileMesg();
     profile.SetFriendlyName("Private Test");
 
@@ -67,10 +81,20 @@ static byte[] CreateTestActivity()
     jumpHeight.SetValue(142);
     record.SetDeveloperField(jumpHeight);
 
+    var jumpCount = new DeveloperField(jumpCountDescription, developerId);
+    jumpCount.SetValue(4);
+    record.SetDeveloperField(jumpCount);
+
+    var jibeCount = new DeveloperField(jibeCountDescription, developerId);
+    jibeCount.SetValue(6);
+    record.SetDeveloperField(jibeCount);
+
     encoder.Open(stream);
     encoder.Write(fileId);
     encoder.Write(developerId);
     encoder.Write(fieldDescription);
+    encoder.Write(jumpCountDescription);
+    encoder.Write(jibeCountDescription);
     encoder.Write(profile);
     encoder.Write(device);
     encoder.Write(record);
@@ -95,7 +119,7 @@ Require(originalAnalysis.HasGps, "Expected GPS coordinates in generated activity
 Require(originalAnalysis.HasHeartRate, "Expected heart rate in generated activity.");
 Require(originalAnalysis.HasPower, "Expected power in generated activity.");
 Require(originalAnalysis.HasCadence, "Expected cadence in generated activity.");
-Require(originalAnalysis.DeveloperFieldCount == 1, "Expected one custom jump field in generated activity.");
+Require(originalAnalysis.DeveloperFieldCount == 3, "Expected one custom jump field in generated activity.");
 Require(originalAnalysis.DeviceInfoMessageCount == 1, "Expected one device info message.");
 Require(originalAnalysis.UserProfileMessageCount == 1, "Expected one user profile message.");
 
@@ -112,12 +136,16 @@ Require(cleanedAnalysis.RecordCount == 1, "Record message was lost during cleani
 Require(cleanedAnalysis.HasHeartRate, "Heart rate was lost during cleaning.");
 Require(cleanedAnalysis.HasPower, "Power was lost during cleaning.");
 Require(cleanedAnalysis.HasCadence, "Cadence was lost during cleaning.");
-Require(cleanedAnalysis.DeveloperFieldCount == 1, "Custom developer field was lost during normal cleaning.");
-var preservedJumpField = DecodeMessages(cleaned.FileBytes)
+Require(cleanedAnalysis.DeveloperFieldCount == 3, "Custom developer field was lost during normal cleaning.");
+var preservedDeveloperFields = DecodeMessages(cleaned.FileBytes)
     .SelectMany(message => message.DeveloperFields)
-    .Single();
-Require(preservedJumpField.Name == "jump_height", "Custom jump field definition was not preserved.");
-Require(Convert.ToUInt16(preservedJumpField.GetValue()) == 142, "Custom jump field value was not preserved.");
+    .ToDictionary(field => field.Name ?? string.Empty);
+Require(preservedDeveloperFields.ContainsKey("jump_height"), "Custom jump height field definition was not preserved.");
+Require(Convert.ToUInt16(preservedDeveloperFields["jump_height"].GetValue()) == 142, "Custom jump height value was not preserved.");
+Require(preservedDeveloperFields.ContainsKey("jump_count"), "Custom jump count field definition was not preserved.");
+Require(Convert.ToByte(preservedDeveloperFields["jump_count"].GetValue()) == 4, "Custom jump count value was not preserved.");
+Require(preservedDeveloperFields.ContainsKey("jibe_count"), "Custom jibe field definition was not preserved.");
+Require(Convert.ToByte(preservedDeveloperFields["jibe_count"].GetValue()) == 6, "Custom jibe count value was not preserved.");
 var preservedDeveloperId = DecodeMessages(cleaned.FileBytes)
     .OfType<DeveloperDataIdMesg>()
     .Single();
@@ -147,7 +175,7 @@ Require(!privateMetricsAnalysis.HasHeartRate, "Heart rate remains after selectin
 Require(!privateMetricsAnalysis.HasPower, "Power remains after selecting its removal.");
 Require(!privateMetricsAnalysis.HasCadence, "Cadence remains after selecting its removal.");
 Require(privateMetricsAnalysis.HasSpeed, "Speed should remain when only heart rate, power and cadence are removed.");
-Require(privateMetricsAnalysis.DeveloperFieldCount == 1, "Selected native metric removal must not delete custom app fields.");
+Require(privateMetricsAnalysis.DeveloperFieldCount == 3, "Selected native metric removal must not delete custom app fields.");
 Require(removedPrivateMetrics.RemovedHeartRateFields > 0, "Expected heart rate fields to be counted.");
 Require(removedPrivateMetrics.RemovedPowerFields > 0, "Expected power fields to be counted.");
 Require(removedPrivateMetrics.RemovedCadenceFields > 0, "Expected cadence fields to be counted.");
@@ -164,7 +192,7 @@ Require(!DecodeMessages(removedDeveloperData.FileBytes).Any(message =>
     message.Name.Equals("developerdataid", StringComparison.OrdinalIgnoreCase) ||
     message.Name.Equals("fielddescription", StringComparison.OrdinalIgnoreCase)),
     "Developer field definitions remain after selecting their removal.");
-Require(removedDeveloperData.RemovedDeveloperFields == 1, "Expected one custom developer field to be counted as removed.");
+Require(removedDeveloperData.RemovedDeveloperFields == 3, "Expected all custom developer fields to be counted as removed.");
 
 var corrupted = original.ToArray();
 corrupted[^1] ^= 0xFF;
