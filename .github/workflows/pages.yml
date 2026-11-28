@@ -125,3 +125,48 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Verify live GitHub Pages content
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          APP_VERSION="$(tr -d '[:space:]' < VERSION)"
+          BUILD_SHA="${GITHUB_SHA:0:7}"
+          RUN_NUMBER="$GITHUB_RUN_NUMBER"
+          BASE_URL="${PAGE_URL%/}"
+          DE_URL="${BASE_URL}/release-${APP_VERSION}/"
+          EN_URL="${BASE_URL}/release-${APP_VERSION}/index.en.html"
+          EXPECTED_FOOTER="id=\"appVersion\">${APP_VERSION}</span> · Build <span id=\"appBuild\">${BUILD_SHA} · Run ${RUN_NUMBER}</span>"
+
+          fetch_and_check() {
+            local url="$1"
+            local label="$2"
+            local file="$RUNNER_TEMP/fit-cleaner-live-${label}.html"
+            local code=""
+
+            for attempt in $(seq 1 12); do
+              code="$(curl -sS -L \
+                -H 'Cache-Control: no-cache, no-store' \
+                -H 'Pragma: no-cache' \
+                -o "$file" \
+                -w '%{http_code}' \
+                "${url}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}")" || code="000"
+
+              if [ "$code" = "200" ] && grep -Fq "$EXPECTED_FOOTER" "$file"; then
+                echo "$label live page verified: version=$APP_VERSION build=$BUILD_SHA run=$RUN_NUMBER"
+                return 0
+              fi
+
+              echo "$label live page not current yet (HTTP $code), attempt $attempt"
+              sleep 5
+            done
+
+            echo "GitHub Pages is not serving the deployment that just passed the browser test."
+            echo "Expected: $EXPECTED_FOOTER"
+            echo "Received footer:"
+            grep -o 'FIT Privacy Cleaner · Version[^<]*<[^>]*>[^<]*</span> · Build[^<]*<[^>]*>[^<]*</span>' "$file" || head -c 1000 "$file"
+            return 1
+          }
+
+          fetch_and_check "$DE_URL" "German"
+          fetch_and_check "$EN_URL" "English"
