@@ -41,7 +41,11 @@ public static class ApiEndpoints
         var form = uploadResult.Form!;
         var options = new CleanOptions(
             RemoveGps: ParseBoolean(form["removeGps"], defaultValue: false),
-            RemoveDeviceAndProfileData: ParseBoolean(form["removeDeviceAndProfileData"], defaultValue: true));
+            RemoveDeviceAndProfileData: ParseBoolean(form["removeDeviceAndProfileData"], defaultValue: true),
+            RemoveHeartRate: ParseBoolean(form["removeHeartRate"], defaultValue: false),
+            RemovePower: ParseBoolean(form["removePower"], defaultValue: false),
+            RemoveCadence: ParseBoolean(form["removeCadence"], defaultValue: false),
+            RemoveDeveloperData: ParseBoolean(form["removeDeveloperData"], defaultValue: false));
 
         try
         {
@@ -51,6 +55,9 @@ public static class ApiEndpoints
             request.HttpContext.Response.Headers["Cache-Control"] = "no-store";
             request.HttpContext.Response.Headers["X-Removed-Gps-Fields"] = result.RemovedGpsFields.ToString();
             request.HttpContext.Response.Headers["X-Removed-Identifier-Fields"] = result.RemovedIdentifierFields.ToString();
+            request.HttpContext.Response.Headers["X-Removed-Heart-Rate-Fields"] = result.RemovedHeartRateFields.ToString();
+            request.HttpContext.Response.Headers["X-Removed-Power-Fields"] = result.RemovedPowerFields.ToString();
+            request.HttpContext.Response.Headers["X-Removed-Cadence-Fields"] = result.RemovedCadenceFields.ToString();
             request.HttpContext.Response.Headers["X-Removed-Metadata-Messages"] = result.RemovedMetadataMessages.ToString();
             request.HttpContext.Response.Headers["X-Removed-Developer-Fields"] = result.RemovedDeveloperFields.ToString();
 
