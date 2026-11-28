@@ -15,21 +15,22 @@ Die Oberfläche unterstützt Dateiauswahl, Drag and Drop, Analyse, gezielte Bere
 - Entfernen von Gerätekennungen, Seriennummern, Hersteller und Produktangaben sowie Software und Hardwareversionen.
 - Entfernen von Geräteinformationen und Benutzerprofilnachrichten.
 - Entfernen von GPS Koordinaten in allen erkannten FIT Feldern, einschließlich Track, Start und Ziel.
-- Entfernen von Entwicklerfeldern, da deren Inhalt durch Drittanbieter frei definiert werden kann und nicht zuverlässig als unkritisch eingestuft werden kann.
+- Eigene App und Entwicklerfelder einschließlich Sprungwerten und benutzerdefinierten Messwerten bleiben standardmäßig erhalten. Sie können bei Bedarf separat entfernt werden.
+- Optionale Entfernung von Herzfrequenz, Leistung und Kadenz einschließlich der zugehörigen Durchschnitts und Maximalwerte.
 - Neuaufbau der FIT Datei mit dem offiziellen Garmin FIT SDK.
 - Prüfung der Eingabedatei und erneutes Einlesen der Ausgabedatei einschließlich FIT Prüfsumme.
 - Analyse und Bereinigung vollständig lokal im Browser. FIT Dateien werden für diese Verarbeitung nicht an einen Server übertragen.
-- Direkter Download. Die Anwendung legt keine dauerhaften Upload Dateien oder Datensätze an.
+- Separater Download oder freiwillige Einsendung der bereinigten FIT Datei an die SurfsApp Entwicklung. Es wird nichts automatisch übertragen.
 
 ## Datenschutzoptionen
 
-Standardmäßig werden Geräte und Profildaten entfernt. GPS bleibt zunächst erhalten, damit die Aktivitätskarte nicht ungefragt verloren geht. Wer eine Strecke veröffentlichen möchte, sollte prüfen, ob Start und Ziel Rückschlüsse auf Wohnort oder Arbeitsplatz zulassen. Mit der Option **GPS Koordinaten entfernen** werden die Koordinaten vollständig entfernt. Die Karte und die Streckenansicht sind dann nicht mehr verfügbar.
+Standardmäßig werden Geräte und Profildaten entfernt. GPS bleibt zunächst erhalten, damit die Aktivitätskarte nicht ungefragt verloren geht. Herzfrequenz, Leistung und Kadenz können einzeln entfernt werden. Eigene App Felder und Entwicklerdaten bleiben standardmäßig erhalten. Dazu können Sprunghöhe, Sprunganzahl, Halsenwerte und weitere app spezifische Messwerte gehören. Nur wenn **App und eigene Zusatzfelder entfernen** eingeschaltet wird, entfernt der Cleaner diese Werte und ihre Definitionen. Mit **GPS Koordinaten entfernen** werden die Koordinaten vollständig entfernt. Die Karte und die Streckenansicht sind dann nicht mehr verfügbar.
 
 Auch nach der Bereinigung kann eine Aktivität durch Zeitpunkt, Streckenverlauf, Leistungswerte oder andere ungewöhnliche Merkmale wiedererkennbar sein. Der Cleaner verspricht deshalb keine vollständige Anonymität. Die Originaldatei wird nicht verändert.
 
 ## FIT Beiträge für die SurfsApp Entwicklung
 
-Nach erfolgreicher Bereinigung kann die bereinigte Datei freiwillig an die SurfsApp Entwicklung gesendet werden. Die Einsendung benötigt eine ausdrückliche Zustimmung. GPS Daten bleiben enthalten, sofern sie nicht beim Bereinigen entfernt wurden. Die übermittelte Datei wird im bestehenden SurfsApp Speicher abgelegt und ist nur im geschützten Tab „Entwicklung“ für den Betreiber abrufbar.
+Nach erfolgreicher Bereinigung kann die bereinigte Datei an die SurfsApp Entwicklung gesendet werden. Erst der Klick auf **Bereinigte FIT Datei senden** startet die Übertragung. Die Originaldatei wird nicht gesendet. Sportart ist erforderlich, Name und Kontakt E Mail sind optional. Name und E Mail werden getrennt von der FIT Datei gespeichert. GPS Daten bleiben enthalten, sofern sie nicht beim Bereinigen entfernt wurden. Die übermittelte Datei wird im bestehenden SurfsApp Speicher abgelegt und ist nur im geschützten Tab „Entwicklung“ für den Betreiber abrufbar.
 
 Maximale Größe einer Einsendung: 2 MB. Die Einsendungen werden nicht automatisch gelöscht. Der Betreiber kann sie im Tab „Entwicklung“ herunterladen und löschen.
 
