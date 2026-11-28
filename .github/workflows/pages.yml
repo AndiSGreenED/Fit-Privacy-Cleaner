@@ -121,13 +121,21 @@ jobs:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/publish/wwwroot
       - name: Deploy website
-        id: deployment
+        id: deployment_primary
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Retry GitHub Pages deployment
+        id: deployment_retry
+        if: steps.deployment_primary.outcome == 'failure'
         uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Verify live GitHub Pages content
         env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          PAGE_URL: ${{ steps.deployment_retry.outputs.page_url || steps.deployment_primary.outputs.page_url }}
         run: |
           set -euo pipefail
           APP_VERSION="$(tr -d '[:space:]' < VERSION)"
