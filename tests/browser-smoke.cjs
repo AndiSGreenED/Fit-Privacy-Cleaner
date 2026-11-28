@@ -56,7 +56,7 @@ const { chromium } = require("playwright");
     await page.locator("#analyzeButton").click();
     await page.waitForFunction(() => document.getElementById("results")?.classList.contains("visible"), null, { timeout: 75000 });
     assert.match(await page.locator("#analysisExplanation").textContent(), /What this analysis means/);
-    assert.match(await page.locator("#analysisExplanation").textContent(), /Heart rate/);
+    assert.match(await page.locator("#checks").textContent(), /Heart rate/);
     assert.match(await page.locator("#analysisExplanation").textContent(), /jump values/);
     assert.equal(await page.locator(".analysis-kept").count(), 0, "The repeated training data preservation paragraph should be gone.");
     assert.equal(await page.locator("#cleanButton").isEnabled(), true);
@@ -89,7 +89,7 @@ const { chromium } = require("playwright");
     assert.match(await page.locator("#sendStatus").textContent(), /sent to SurfsApp development/);
 
     const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.2.0/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
-    assert.ok(versioned && versioned.ok(), "Version 1.1.0 page did not load.");
+    assert.ok(versioned && versioned.ok(), "Version 1.2.0 page did not load.");
     await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
     await page.waitForFunction(() => document.getElementById("appBuild")?.textContent?.includes("Run"), null, { timeout: 15000 });
     assert.equal(await page.locator("#appVersion").textContent(), "1.2.0");
