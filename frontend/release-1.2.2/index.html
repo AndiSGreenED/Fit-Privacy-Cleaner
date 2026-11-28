@@ -301,5 +301,28 @@ header{margin-bottom:28px;align-items:center}
 <div id="app" hidden aria-hidden="true"></div>
 <script src="/Fit-Privacy-Cleaner/_framework/blazor.webassembly.js" autostart="false"></script>
 <script src="/Fit-Privacy-Cleaner/cleaner-flow.js?v=__BUILD_SHA__"></script>
+<script>
+(async function loadFitCleanerVersionMetadata() {
+  const versionElement = document.getElementById("appVersion");
+  const buildElement = document.getElementById("appBuild");
+  if (!versionElement || !buildElement) return;
+
+  try {
+    const metadataUrl = new URL("/Fit-Privacy-Cleaner/version.json", window.location.origin);
+    metadataUrl.searchParams.set("_", String(Date.now()));
+    const response = await fetch(metadataUrl.toString(), { cache: "no-store" });
+    if (!response.ok) throw new Error("Version metadata is not available.");
+
+    const metadata = await response.json();
+    if (metadata.version) versionElement.textContent = metadata.version;
+    if (metadata.build) {
+      buildElement.textContent = metadata.build + (metadata.run ? " · Run " + metadata.run : "");
+    }
+    window.fitCleanerVersionMetadataLoaded = true;
+  } catch (error) {
+    console.warn("FIT Cleaner version metadata could not be loaded.", error);
+  }
+})();
+</script>
 </body>
 </html>

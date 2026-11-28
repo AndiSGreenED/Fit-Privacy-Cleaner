@@ -16,8 +16,13 @@ const { chromium } = require("playwright");
     assert.match(expectedRunNumber || "", /^\d+$/, "Expected GitHub Actions run number was not supplied by the workflow.");
     const expectedBuildLabel = expectedBuildSha + " · Run " + expectedRunNumber;
     const assertFooterBuildInfo = async () => {
-      assert.equal(await page.locator("#appVersion").textContent(), expectedAppVersion, "Footer version must match VERSION.");
-      assert.equal(await page.locator("#appBuild").textContent(), expectedBuildLabel, "Footer build and run must match this exact GitHub Actions run.");
+      await page.waitForFunction(({ version, build }) => {
+        return window.fitCleanerVersionMetadataLoaded === true &&
+          document.getElementById("appVersion")?.textContent === version &&
+          document.getElementById("appBuild")?.textContent === build;
+      }, { version: expectedAppVersion, build: expectedBuildLabel }, { timeout: 15000 });
+      assert.equal(await page.locator("#appVersion").textContent(), expectedAppVersion, "Footer version must match the live version.json.");
+      assert.equal(await page.locator("#appBuild").textContent(), expectedBuildLabel, "Footer build and run must match the live version.json.");
     };
     const versionMetadataRequests = [];
     page.on("request", request => {
@@ -128,7 +133,8 @@ const { chromium } = require("playwright");
     assert.equal(await page.locator("#removeGps").isVisible(), true);
     assert.equal(await page.locator("#removeLocation").isVisible(), true);
     assert.equal(await page.locator("#analyzeButton").isDisabled(), true);
-    assert.deepEqual(versionMetadataRequests, [], "Build metadata must be embedded in the release HTML, not fetched from version.json.");
+    assert.ok(versionMetadataRequests.length >= 3, "German, English, and direct release page loads must fetch live version.json metadata.");
+    assert.ok(versionMetadataRequests.every(url => new URL(url).searchParams.has("_")), "Version metadata requests must use a unique cache busting query.");
     console.log("FIT Privacy Cleaner 1.2.2 browser end-to-end tests passed.");
   } catch (error) {
     if (page) {

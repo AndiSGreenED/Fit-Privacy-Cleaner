@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir -p artifacts/publish/wwwroot
           cp -a frontend/. artifacts/publish/wwwroot/
-      - name: Inject version and deployment identity into release pages
+      - name: Inject release fallback and write live version metadata
         env:
           DEPLOY_COMMIT_SHA: ${{ github.sha }}
           DEPLOY_RUN_NUMBER: ${{ github.run_number }}
@@ -60,6 +60,21 @@ jobs:
           APP_VERSION="$(tr -d '[:space:]' < VERSION)"
           BUILD_SHA="${DEPLOY_COMMIT_SHA:0:7}"
           RUN_NUMBER="$DEPLOY_RUN_NUMBER"
+          cat > artifacts/publish/wwwroot/version.json <<EOF
+          {
+            "version": "$APP_VERSION",
+            "build": "$BUILD_SHA",
+            "run": "$RUN_NUMBER",
+            "builtAt": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          }
+          EOF
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          metadata = json.loads(Path("artifacts/publish/wwwroot/version.json").read_text(encoding="utf-8"))
+          assert metadata["version"] == Path("VERSION").read_text(encoding="utf-8").strip()
+          assert len(metadata["build"]) == 7 and metadata["run"].isdigit()
+          PY
           RELEASE_DIR="artifacts/publish/wwwroot/release-${APP_VERSION}"
           test -f "$RELEASE_DIR/index.html"
           test -f "$RELEASE_DIR/index.en.html"
@@ -178,3 +193,21 @@ jobs:
 
           fetch_and_check "$DE_URL" "German"
           fetch_and_check "$EN_URL" "English"
+
+          VERSION_FILE="$RUNNER_TEMP/fit-cleaner-version.json"
+          curl -fsS -L \
+            -H 'Cache-Control: no-cache, no-store' \
+            -H 'Pragma: no-cache' \
+            -o "$VERSION_FILE" \
+            "${BASE_URL}/version.json?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-metadata"
+          python3 - "$VERSION_FILE" "$APP_VERSION" "$BUILD_SHA" "$RUN_NUMBER" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          metadata = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = {"version": sys.argv[2], "build": sys.argv[3], "run": sys.argv[4]}
+          actual = {key: metadata.get(key) for key in expected}
+          if actual != expected:
+              raise SystemExit(f"Live version metadata mismatch: expected {expected}, received {actual}")
+          print(f"Live version.json verified: version={actual['version']} build={actual['build']} run={actual['run']}")
+          PY
