@@ -8,6 +8,21 @@ const { chromium } = require("playwright");
   try {
     browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
     page = await browser.newPage({ acceptDownloads: true, locale: "de-DE" });
+    const expectedAppVersion = process.env.EXPECTED_APP_VERSION;
+    const expectedBuildSha = process.env.EXPECTED_BUILD_SHA;
+    const expectedRunNumber = process.env.EXPECTED_RUN_NUMBER;
+    assert.ok(expectedAppVersion, "Expected application version was not supplied by the workflow.");
+    assert.match(expectedBuildSha || "", /^[a-f0-9]{7}$/, "Expected build SHA was not supplied by the workflow.");
+    assert.match(expectedRunNumber || "", /^\d+$/, "Expected GitHub Actions run number was not supplied by the workflow.");
+    const expectedBuildLabel = expectedBuildSha + " · Run " + expectedRunNumber;
+    const assertFooterBuildInfo = async () => {
+      assert.equal(await page.locator("#appVersion").textContent(), expectedAppVersion, "Footer version must match VERSION.");
+      assert.equal(await page.locator("#appBuild").textContent(), expectedBuildLabel, "Footer build and run must match this exact GitHub Actions run.");
+    };
+    const versionMetadataRequests = [];
+    page.on("request", request => {
+      if (request.url().includes("/Fit-Privacy-Cleaner/version.json")) versionMetadataRequests.push(request.url());
+    });
     page.on("pageerror", error => console.error("[browser page error]", error.message));
     page.on("console", message => { if (message.type() === "error") console.error("[browser console]", message.text()); });
     page.on("requestfailed", request => console.error("[request failed]", request.url(), request.failure()?.errorText || ""));
@@ -17,6 +32,7 @@ const { chromium } = require("playwright");
     assert.ok(response && response.ok(), "Cleaner page did not load.");
     await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
     assert.match(await page.locator("#runtimeStatus").textContent(), /FIT Prozessor bereit/);
+    await assertFooterBuildInfo();
     assert.equal(await page.locator("#removeDevice").isVisible(), true);
     assert.equal(await page.locator("#removeGps").isVisible(), true);
     assert.equal(await page.locator("#removeLocation").isVisible(), true);
@@ -36,8 +52,7 @@ const { chromium } = require("playwright");
     ]);
     await page.waitForFunction(() => document.documentElement.lang === "en" && document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
     assert.equal(await page.locator("#upload-title").textContent(), "Select FIT file");
-    assert.equal(await page.locator("#appVersion").textContent(), "1.2.1");
-    assert.match(await page.locator("#appBuild").textContent(), /^[a-f0-9]{7} · Run \d+$/);
+    await assertFooterBuildInfo();
 
     await page.locator("#fileInput").setInputFiles(path.resolve(fixture));
     await page.waitForFunction(() => document.getElementById("status")?.textContent?.includes("File selected"), null, { timeout: 10000 });
@@ -109,11 +124,11 @@ const { chromium } = require("playwright");
     assert.equal(cleanerScriptResponse.status(), 200, "Versioned page must load the shared cleaner script from the site root.");
     assert.equal(blazorScriptResponse.status(), 200, "Versioned page must load Blazor from the site root.");
     await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
-    await page.waitForFunction(() => document.getElementById("appBuild")?.textContent?.includes("Run"), null, { timeout: 15000 });
-    assert.equal(await page.locator("#appVersion").textContent(), "1.2.1");
+    await assertFooterBuildInfo();
     assert.equal(await page.locator("#removeGps").isVisible(), true);
     assert.equal(await page.locator("#removeLocation").isVisible(), true);
     assert.equal(await page.locator("#analyzeButton").isDisabled(), true);
+    assert.deepEqual(versionMetadataRequests, [], "Build metadata must be embedded in the release HTML, not fetched from version.json.");
     console.log("FIT Privacy Cleaner 1.2.1 browser end-to-end tests passed.");
   } catch (error) {
     if (page) {

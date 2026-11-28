@@ -51,29 +51,33 @@ jobs:
         run: |
           mkdir -p artifacts/publish/wwwroot
           cp -a frontend/. artifacts/publish/wwwroot/
-      - name: Add version metadata and cache-busting build id
+      - name: Inject version and deployment identity into release pages
+        env:
+          DEPLOY_COMMIT_SHA: ${{ github.sha }}
+          DEPLOY_RUN_NUMBER: ${{ github.run_number }}
         run: |
-          APP_VERSION="$(cat VERSION)"
-          BUILD_SHA="${GITHUB_SHA:0:7}"
+          set -euo pipefail
+          APP_VERSION="$(tr -d '[:space:]' < VERSION)"
+          BUILD_SHA="${DEPLOY_COMMIT_SHA:0:7}"
+          RUN_NUMBER="$DEPLOY_RUN_NUMBER"
           RELEASE_DIR="artifacts/publish/wwwroot/release-${APP_VERSION}"
           test -f "$RELEASE_DIR/index.html"
           test -f "$RELEASE_DIR/index.en.html"
           grep -Fq "/release-${APP_VERSION}/" artifacts/publish/wwwroot/index.html
           for PAGE in "$RELEASE_DIR/index.html" "$RELEASE_DIR/index.en.html"; do
-            sed -i "s/__BUILD_SHA__/$BUILD_SHA/g" "$PAGE"
-            if grep -q "__BUILD_SHA__" "$PAGE"; then
-              echo "Build id placeholder was not replaced in $PAGE"
+            sed -i \
+              -e "s/__APP_VERSION__/$APP_VERSION/g" \
+              -e "s/__BUILD_SHA__/$BUILD_SHA/g" \
+              -e "s/__RUN_NUMBER__/$RUN_NUMBER/g" \
+              "$PAGE"
+            if grep -Eq '__APP_VERSION__|__BUILD_SHA__|__RUN_NUMBER__' "$PAGE"; then
+              echo "Deployment metadata placeholder was not replaced in $PAGE"
               exit 1
             fi
+            grep -Fq "id=\"appVersion\">$APP_VERSION</span>" "$PAGE"
+            grep -Fq "id=\"appBuild\">$BUILD_SHA · Run $RUN_NUMBER</span>" "$PAGE"
           done
-          cat > artifacts/publish/wwwroot/version.json <<EOF
-          {
-            "version": "$APP_VERSION",
-            "build": "$BUILD_SHA",
-            "run": "$GITHUB_RUN_NUMBER",
-            "builtAt": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          }
-          EOF
+          echo "FIT Cleaner deployment: version=$APP_VERSION build=$BUILD_SHA run=$RUN_NUMBER"
       - name: Prepare local browser test site
         run: |
           mkdir -p artifacts/testhost/Fit-Privacy-Cleaner
@@ -83,6 +87,8 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - name: Run full browser smoke test
+        env:
+          EXPECTED_RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -e
           python3 -m http.server 4173 --directory artifacts/testhost > artifacts/http.log 2>&1 &
@@ -94,7 +100,10 @@ jobs:
             fi
             sleep 1
           done
-          FIT_TEST_FIXTURE="$GITHUB_WORKSPACE/artifacts/smoke.fit" node tests/browser-smoke.cjs
+          EXPECTED_APP_VERSION="$(tr -d '[:space:]' < VERSION)" \
+          EXPECTED_BUILD_SHA="${GITHUB_SHA:0:7}" \
+          FIT_TEST_FIXTURE="$GITHUB_WORKSPACE/artifacts/smoke.fit" \
+          node tests/browser-smoke.cjs
       - name: Upload browser test evidence
         if: always()
         uses: actions/upload-artifact@v4

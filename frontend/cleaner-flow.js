@@ -21,8 +21,6 @@ const results = document.getElementById("results");
 const statsElement = document.getElementById("stats");
 const checksElement = document.getElementById("checks");
 const runtimeStatusElement = document.getElementById("runtimeStatus");
-const appVersionElement = document.getElementById("appVersion");
-const appBuildElement = document.getElementById("appBuild");
 const privacySection = document.getElementById("privacySection");
 const cleanedPanel = document.getElementById("cleanedPanel");
 const contributePanel = document.getElementById("contributePanel");
@@ -118,27 +116,7 @@ async function startFitRuntime() {
     return false;
   }
 }
-async function loadVersion() {
-  const releaseMatch = location.pathname.match(/\/release-([0-9]+\.[0-9]+\.[0-9]+)\//);
-  const releaseVersion = releaseMatch ? releaseMatch[1] : "unknown";
-  appVersionElement.textContent = releaseVersion;
-  const cleanerScript = document.querySelector('script[src*="cleaner-flow.js"]');
-  const buildId = cleanerScript ? new URL(cleanerScript.src, location.href).searchParams.get("v") : "";
-  if (!/^[a-f0-9]{7}$/.test(buildId || "")) {
-    appBuildElement.textContent = "Archived build";
-    return;
-  }
-  try {
-    const response = await fetch("/Fit-Privacy-Cleaner/version.json?build=" + encodeURIComponent(buildId), { cache: "no-store" });
-    if (!response.ok) throw new Error("Version metadata not available");
-    const version = await response.json();
-    if (version.version !== releaseVersion || version.build !== buildId) throw new Error("Version and build do not match");
-    appBuildElement.textContent = version.build + (version.run ? " · Run " + version.run : "");
-  } catch (_) {
-    appBuildElement.textContent = "Build does not match this version";
-  }
-}
-loadVersion();
+
 function resetAnalysis() {
   analysisComplete = false;
   cleanedBlob = null;
