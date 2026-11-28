@@ -52,7 +52,7 @@ const { chromium } = require("playwright");
     const fixture = process.env.FIT_TEST_FIXTURE;
     assert.ok(fixture && require("node:fs").existsSync(fixture), "Generated FIT fixture is missing.");
     await Promise.all([
-      page.waitForURL(/release-1\.2\.2\/index\.en\.html/),
+      page.waitForURL(/release-1\.2\.3\/index\.en\.html/),
       page.locator('.language-switch a[href$="index.en.html"]').click()
     ]);
     await page.waitForFunction(() => document.documentElement.lang === "en" && document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
