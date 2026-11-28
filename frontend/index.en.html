@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<base href="/Fit-Privacy-Cleaner/?lang=de">
+<base href="/Fit-Privacy-Cleaner/">
 <meta name="theme-color" content="#08111f">
 <meta name="description" content="Analyse Garmin FIT files and selectively remove personal data.">
 <title>FIT Privacy Cleaner</title>
@@ -90,116 +90,176 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
 @media(max-width:650px){.shell{width:min(100% - 24px,1040px);padding-top:20px}header{margin-bottom:38px}.local-pill{font-size:0;padding:10px}.local-pill:before{margin:0}.options{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.action-row{align-items:stretch;flex-direction:column}.action-row button{width:100%}footer{flex-direction:column}h1{font-size:42px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
 .language-switch{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:4px;background:rgba(7,17,31,.45)}.language-switch a{display:inline-block;padding:5px 9px;border-radius:999px;color:var(--muted);font-size:11px;font-weight:800;text-decoration:none}.language-switch a.active{background:var(--accent);color:#07211f}
+
+/* FIT Cleaner 1.1 workflow refinements */
+header{margin-bottom:28px;align-items:center}
+.brand{gap:14px}
+.brand-mark{width:62px;height:62px;flex-basis:62px}
+.brand-mark img{width:62px;height:62px}
+.brand-title{display:flex;flex-direction:column;gap:2px}
+.brand-title strong{font-size:18px;line-height:1.15;letter-spacing:.045em}
+.brand-title span{font-size:11px;color:var(--soft);font-weight:500;letter-spacing:0}
+.top-tools{display:flex;align-items:center;gap:10px}
+.hero{margin-bottom:22px}
+.hero h1{font-size:clamp(30px,4.2vw,46px);line-height:1.08;letter-spacing:-.04em}
+.hero .lead{font-size:14px;margin-top:12px;max-width:650px}
+.workspace{padding:clamp(16px,3vw,30px)}
+#uploadSection{scroll-margin-top:18px}
+#privacySection,#results,#cleanedPanel{scroll-margin-top:18px}
+.dropzone{min-height:108px;display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:14px;align-items:center;justify-content:initial;text-align:left;padding:16px 20px}
+.dropzone .upload-icon{width:42px;height:42px;margin:0;border-radius:13px}
+.dropzone .upload-icon svg{width:22px;height:22px}
+.dropzone-copy{min-width:0}
+.dropzone strong{font-size:14px}
+.dropzone p{margin:2px 0 0;font-size:12px}
+.dropzone .file-types{margin:0;white-space:nowrap;font-size:10px}
+.file-card{margin-top:10px;padding:11px 14px}
+.privacy-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.privacy-section .section-head{margin:0 0 14px}
+.option{display:block;padding:15px 16px}
+.option-top{display:flex;gap:11px;align-items:flex-start}
+.option-top input{margin-top:3px}
+.option-copy{min-width:0}
+.option-copy label{display:block;cursor:pointer}
+.option-copy strong{font-size:13px}
+.option-copy small{font-size:11px}
+.option-chips{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0 0 30px}
+.option-chips span,.preview-tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted);font-size:10px;line-height:1.3}
+.privacy-preview{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:14px;padding:14px 16px;border:1px solid rgba(80,224,202,.22);border-radius:15px;background:rgba(80,224,202,.055)}
+.privacy-preview strong{font-size:13px}
+.privacy-preview p{color:var(--muted);font-size:12px;margin:4px 0 0}
+.preview-tags{display:flex;flex-wrap:wrap;gap:6px}
+.preview-tag{border-color:rgba(80,224,202,.22);color:var(--accent);background:rgba(80,224,202,.04)}
+.always-strip,.preserve-strip{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:11px 14px;border:1px solid var(--line);border-radius:13px;background:rgba(7,17,31,.32)}
+.always-strip strong,.preserve-strip strong{display:block;font-size:12px}
+.always-strip p,.preserve-strip p{margin:3px 0 0;color:var(--soft);font-size:11px}
+.always-icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:8px;background:rgba(80,224,202,.1);color:var(--accent);font-size:13px;font-weight:800}
+#analyzeButton{min-width:190px}
+#runtimeStatus{margin-top:10px}
+.analysis-explanation{display:grid;gap:10px;margin-top:16px}
+.analysis-message{padding:13px 15px;border:1px solid rgba(123,182,255,.2);border-radius:14px;background:rgba(123,182,255,.055)}
+.analysis-message strong{font-size:12px}
+.analysis-message p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.analysis-item{padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:rgba(7,17,31,.3)}
+.analysis-item strong{display:block;font-size:11px}
+.analysis-item span{display:block;margin-top:3px;color:var(--soft);font-size:11px;line-height:1.4}
+.analysis-item.found strong{color:var(--accent)}
+.analysis-item.clear strong{color:var(--success)}
+.analysis-kept{padding:12px 14px;border:1px solid rgba(121,225,168,.2);border-radius:13px;background:rgba(121,225,168,.045)}
+.analysis-kept strong{font-size:12px}
+.analysis-kept p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.clean-row{align-items:center}
+.clean-note{max-width:540px;font-size:12px;line-height:1.5}
+.cleaned-panel{margin-top:20px;padding:18px;border:1px solid rgba(121,225,168,.25);border-radius:18px;background:rgba(121,225,168,.045)}
+.cleaned-heading{display:flex;align-items:center;gap:9px}
+.cleaned-heading strong{font-size:15px}
+.cleaned-heading .success-mark{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:rgba(121,225,168,.14);color:var(--success);font-weight:800}
+.cleaned-intro{margin:7px 0 0;color:var(--muted);font-size:12px}
+.cleaned-details{display:grid;gap:7px;margin:14px 0 0;padding:0;list-style:none}
+.cleaned-details li{padding:9px 11px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:11px;background:rgba(7,17,31,.28)}
+.post-clean-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.post-clean-actions button{flex:1 1 220px}
+.post-clean-note{margin:9px 0 0;color:var(--soft);font-size:11px}
+.contribute{margin-top:16px;padding:16px;border-color:rgba(80,224,202,.25)}
+.contribute h3{font-size:15px}
+.contribute .form-intro{color:var(--muted);font-size:11px;margin:5px 0 0}
+.contribute-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.contribute-fields label{font-size:11px}
+.contribute-fields select,.contribute-fields textarea,.contribute-fields input{width:100%;min-width:0;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:#0d1a2b;color:var(--text);font:inherit}
+.contribute-fields input::placeholder,.contribute-fields textarea::placeholder{color:var(--soft)}
+.field-hint{display:block;color:var(--accent);font-size:10px;font-weight:650;margin-top:2px}
+.form-privacy-note{margin:9px 0;color:var(--soft);font-size:11px;line-height:1.45}
+.contribute-consent{font-size:11px;line-height:1.45}
+.contribute-consent input{accent-color:var(--accent)}
+#sendFitButton{min-width:230px}
+#sendStatus{font-size:11px}
+@media(max-width:650px){
+ .shell{padding-top:16px}
+ header{margin-bottom:24px}
+ .brand-mark{width:54px;height:54px;flex-basis:54px}
+ .brand-mark img{width:54px;height:54px}
+ .brand-title strong{font-size:15px}
+ .brand-title span{font-size:10px}
+ .top-tools{gap:6px}
+ .local-pill{display:none}
+ .hero{margin-bottom:18px}
+ .hero h1{font-size:34px}
+ .dropzone{min-height:92px;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:13px}
+ .dropzone .upload-icon{width:38px;height:38px}
+ .dropzone .file-types{grid-column:2;margin-top:-3px}
+ .options,.analysis-grid{grid-template-columns:1fr}
+ .option-chips{margin-left:0}
+ .contribute-fields{grid-template-columns:1fr}
+ .post-clean-actions{flex-direction:column}
+ .post-clean-actions button{width:100%}
+}
 </style>
 </head>
 <body><script>try{localStorage.setItem("surfsapp-language","en")}catch(e){}</script>
 <main class="shell">
-  <header>
-    <div class="brand">
-      <div class="brand-mark">
-        <img src="SurfsApp_Symbol_1.png" alt="SurfsApp">
-      </div>
-      <span>FIT PRIVACY CLEANER</span>
-    </div>
-    <div class="language-switch" role="group" aria-label="Choose language"><a href="/Fit-Privacy-Cleaner/?lang=de" onclick="localStorage.setItem(&quot;surfsapp-language&quot;,&quot;de&quot;)">DE</a><a class="active" href="/Fit-Privacy-Cleaner/index.en.html" onclick="localStorage.setItem(&quot;surfsapp-language&quot;,&quot;en&quot;)">EN</a></div><div class="local-pill">No account registration required</div>
-  </header>
-
-  <section class="hero">
-    <p class="eyebrow">Your activity. Your data.</p>
-    <h1>Share your performance.<br><span>Not your privacy.</span></h1>
-    <p class="lead">Check your Garmin FIT file, remove personal metadata and download a cleaned file. Your training data stays intact.</p>
-  </section>
-
-  <section class="workspace" aria-labelledby="upload-title">
-    <div class="section-head">
-      <div>
-        <h2 id="upload-title">Select FIT file</h2>
-        <p>One FIT activity file, up to 50 MB.</p>
-      </div>
-      <span class="step">01 / FILE</span>
-    </div>
-
+  
+<header>
+  <div class="brand"><div class="brand-mark"><img src="SurfsApp_Symbol_1.png" alt="SurfsApp"></div><div class="brand-title"><strong>FIT PRIVACY CLEANER</strong><span>Review and clean FIT files locally</span></div></div>
+  <div class="top-tools"><div class="language-switch" role="group" aria-label="Choose language"><a href="/Fit-Privacy-Cleaner/release-1.1.0/?lang=de" onclick="localStorage.setItem('surfsapp-language','de')">DE</a><a class="active" href="/Fit-Privacy-Cleaner/release-1.1.0/index.en.html" onclick="localStorage.setItem('surfsapp-language','en')">EN</a></div><div class="local-pill">No account registration</div></div>
+</header>
+<section class="hero">
+  <p class="eyebrow">Your activity. Your data.</p>
+  <h1>Share your performance.<br><span>Not your privacy.</span></h1>
+  <p class="lead">Choose which personal information should be removed from your FIT file. Analysis and cleaning run locally. Nothing is sent unless you explicitly approve it.</p>
+</section>
+<section class="workspace" aria-label="Clean a FIT file">
+  <section id="uploadSection">
+    <div class="section-head"><div><h2 id="upload-title">Select FIT file</h2><p>One FIT activity file, up to 50 MB.</p></div><span class="step">01 / FILE</span></div>
     <input id="fileInput" type="file" accept=".fit,application/octet-stream" hidden>
     <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Select a FIT file or drop it here">
-      <div class="upload-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-3"/></svg>
-      </div>
-      <strong>Drop your file here</strong>
-      <p>or click to choose a file</p>
-      <span class="file-types">.FIT FILE · UP TO 50 MB</span>
+      <div class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-3"/></svg></div>
+      <div class="dropzone-copy"><strong>Select a file or drop it here</strong><p>Choosing a file does not start the analysis.</p></div>
+      <span class="file-types">.FIT FILE · MAX. 50 MB</span>
     </div>
-
-    <div id="fileCard" class="file-card" aria-live="polite">
-      <div class="file-meta">
-        <div id="fileName" class="file-name"></div>
-        <div id="fileSize" class="file-size"></div>
-      </div>
-      <button id="removeFile" class="text-button" type="button">Remove</button>
-    </div>
-
-    <div class="section-head" style="margin:24px 0 12px">
-      <div>
-        <h2>Cleaning options</h2>
-        <p>Choose what should be removed. Selecting a file does not start the analysis.</p>
-      </div>
-      <span class="step">02 / PRIVACY</span>
-    </div>
-
+    <div id="fileCard" class="file-card" aria-live="polite"><div class="file-meta"><div id="fileName" class="file-name"></div><div id="fileSize" class="file-size"></div></div><button id="removeFile" class="text-button" type="button">Remove</button></div>
+  </section>
+  <section id="privacySection" class="privacy-section" tabindex="-1">
+    <div class="section-head"><div><h2>Which information should be removed?</h2><p>Choose the data that should not remain in the cleaned FIT file.</p></div><span class="step">02 / PRIVACY</span></div>
     <div class="options">
-      <div class="option">
-        <input id="removeDevice" type="checkbox" checked>
-        <label for="removeDevice">
-          <strong>Remove device and profile data</strong>
-          <small>Removes device identifiers, serial numbers, device information, user profile and file creator data. Non standard developer fields are always removed, regardless of this setting.</small>
-        </label>
-      </div>
-      <div class="option">
-        <input id="removeGps" type="checkbox">
-        <label for="removeGps">
-          <strong>Remove GPS coordinates</strong>
-          <small>Removes start, finish and track coordinates. The map and route view will no longer be available.</small>
-        </label>
-      </div>
+      <article class="option"><div class="option-top"><input id="removeDevice" type="checkbox" checked><div class="option-copy"><label for="removeDevice"><strong>Device and personal identifiers</strong><small>Removes device identity and personal profile information from the FIT file.</small></label></div></div><div class="option-chips" aria-label="Examples"><span>Serial number</span><span>Manufacturer and model</span><span>Device ID</span><span>Username and profile</span><span>File creator</span><span>Email and contact details</span></div></article>
+      <article class="option"><div class="option-top"><input id="removeGps" type="checkbox"><div class="option-copy"><label for="removeGps"><strong>Location and route data</strong><small>Removes GPS coordinates that can reveal your start, finish and route.</small></label></div></div><div class="option-chips" aria-label="Examples"><span>Start position</span><span>Finish position</span><span>Track points</span><span>Latitude and longitude</span></div></article>
     </div>
-
-    <div class="action-row">
-      <button id="analyzeButton" class="primary" type="button" disabled>Analyse file</button>
-      <button id="resetButton" class="secondary" type="button">Reset</button>
-      <span id="status" class="status" role="status" aria-live="polite"></span>
-    </div>
+    <div class="privacy-preview" aria-live="polite"><div><strong>This is what will be removed</strong><p id="privacyPreviewText">Your selection is summarized here.</p></div><div id="privacyPreviewList" class="preview-tags"></div></div>
+    <div class="always-strip"><span class="always-icon" aria-hidden="true">✓</span><div><strong>Always removed: non-standard developer data</strong><p>Extra fields from third-party apps and their field descriptions are always removed. They can contain arbitrary personal information and cannot be reliably classified individually.</p></div></div>
+    <div class="preserve-strip"><span class="always-icon" aria-hidden="true">↗</span><div><strong>Your training data is preserved</strong><p>Time, distance, speed, heart rate, power, cadence, laps and sessions remain. Only the selected private information and developer fields are removed.</p></div></div>
+    <div class="action-row"><button id="analyzeButton" class="primary" type="button" disabled>Analyse file</button><button id="resetButton" class="secondary" type="button">Reset</button><span id="status" class="status" role="status" aria-live="polite"></span></div>
     <div id="runtimeStatus" class="status" role="status" aria-live="polite">Initializing FIT processor…</div>
-
-    <section id="results" class="results" aria-labelledby="analysis-title">
-      <h3 id="analysis-title">Analysis complete</h3>
-      <p class="results-intro">The data was read directly from the FIT file. No features are marked as present without checking.</p>
-      <div id="stats" class="stats"></div>
-      <div id="checks" class="checks"></div>
-      <div class="clean-row">
-        <div class="clean-note">The cleaned file is rebuilt, its FIT checksum is updated, and the result is then read and checked again.</div>
-        <button id="cleanButton" class="primary" type="button">Clean and download</button>
-      </div>
-      <div id="contributePanel" class="contribute" hidden>
-        <h3>Contribute a FIT file to development</h3>
-        <p>After cleaning, you can optionally send the cleaned file, up to 2 MB, to the SurfsApp development team. It is stored privately and is only visible to the site administrator. GPS data remains included unless you removed it during cleaning.</p>
-        <div class="contribute-fields">
-          <label for="donateSport">Sport
-            <select id="donateSport"><option value="Windsurfen">Windsurfing</option><option value="Wingen">Wing foiling</option><option value="Surfen">Surfing</option><option value="Sonstiges">Other</option></select>
-          </label>
-          <label for="donateComment">Comment, for example the manoeuvre you are looking for
-            <textarea id="donateComment" rows="2" maxlength="1000" placeholder="For example: pushloop, backloop or a specific jibe"></textarea>
-          </label>
-          <label for="donateName">Name (optional)
-            <input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
-          </label>
-          <label for="donateContact">Email address (optional)
-            <input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com">
-          </label>
-        </div>
-        <label class="contribute-consent"><input type="checkbox" id="donateConsent"> I want to submit this cleaned FIT file voluntarily. I understand that it may contain GPS data if I have not removed it.</label>
-        <div class="action-row"><button id="sendFitButton" class="secondary" type="button" disabled>Send cleaned FIT file</button><span id="sendStatus" class="status" role="status" aria-live="polite"></span></div>
-        <div class="honeypot" aria-hidden="true"><label for="donateWebsite">Website<input id="donateWebsite" tabindex="-1" autocomplete="off"></label></div>
-      </div>
+  </section>
+  <section id="results" class="results" aria-labelledby="analysis-title">
+    <h3 id="analysis-title">What is in your FIT file?</h3>
+    <p class="results-intro">The analysis only reads the file. Nothing has been changed or transferred yet.</p>
+    <div id="stats" class="stats"></div><div id="checks" class="checks"></div><div id="analysisExplanation" class="analysis-explanation"></div>
+    <div class="clean-row"><div class="clean-note">Ready to continue? “Clean file” creates a new FIT file and checks it again. Your original file remains unchanged.</div><button id="cleanButton" class="primary" type="button" disabled>Clean file now</button></div>
+    <section id="cleanedPanel" class="cleaned-panel" hidden>
+      <div class="cleaned-heading"><span class="success-mark">✓</span><strong>Cleaning complete</strong></div>
+      <p id="cleanSummaryText" class="cleaned-intro">The cleaned FIT file was created locally. Nothing has been sent.</p>
+      <ul id="cleanedDetails" class="cleaned-details"></ul>
+      <div class="post-clean-actions"><button id="downloadButton" class="secondary" type="button">Download cleaned file</button><button id="jumpToSendButton" class="primary" type="button">Send file to SurfsApp</button></div>
+      <p class="post-clean-note">You can download the file or voluntarily contribute it to development. Nothing is transferred without your explicit consent.</p>
+      <section id="contributePanel" class="contribute" aria-labelledby="contributeTitle">
+        <h3 id="contributeTitle">Contribute to development</h3>
+        <p class="form-intro">Your cleaned file helps improve features such as detecting jibes, jumps and wave rides. The details below make follow-up and classification easier.</p>
+        <form id="donateForm">
+          <div class="contribute-fields">
+            <label for="donateSport">Sport <span class="field-hint">Please select</span><select id="donateSport" required><option value="" selected disabled>Select sport</option><option value="Windsurfen">Windsurfing</option><option value="Wingen">Wing foiling</option><option value="Surfen">Surfing</option><option value="Sonstiges">Other</option></select></label>
+            <label for="donateComment">What should I look for? <span class="field-hint">Optional, but helpful</span><textarea id="donateComment" rows="2" maxlength="1000" placeholder="For example: pushloop, backloop or a specific jibe"></textarea></label>
+            <label for="donateName">Your name <span class="field-hint">Provide a name or email for follow-up</span><input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="First name or nickname"></label>
+            <label for="donateContact">Contact email<input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com"></label>
+          </div>
+          <p class="form-privacy-note">A name or email is recommended, and at least one is needed for follow-up. These details are submitted separately and are not written into the FIT file.</p>
+          <label class="contribute-consent"><input type="checkbox" id="donateConsent" required> I voluntarily agree to send this cleaned FIT file to SurfsApp development. GPS data may remain if I did not select its removal.</label>
+          <div class="action-row"><button id="sendFitButton" class="primary" type="submit" disabled>Send cleaned FIT file</button><span id="sendStatus" class="status" role="status" aria-live="polite"></span></div>
+          <div class="honeypot" aria-hidden="true"><label for="donateWebsite">Website<input id="donateWebsite" tabindex="-1" autocomplete="off"></label></div>
+        </form>
+      </section>
     </section>
+  </section>
 
     <div class="privacy">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
@@ -211,7 +271,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
   </section>
 
   <footer>
-    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.0.4</span> · Build <span id="appBuild">loading</span></span>
+    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.1.0</span> · Build <span id="appBuild">loading</span></span>
     <span>The original file remains unchanged.</span>
   </footer>
 </main>
@@ -219,426 +279,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
 <div id="app" hidden aria-hidden="true"></div>
 <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script>
-const fileInput = document.getElementById("fileInput");
-const dropzone = document.getElementById("dropzone");
-const fileCard = document.getElementById("fileCard");
-const fileName = document.getElementById("fileName");
-const fileSize = document.getElementById("fileSize");
-const analyzeButton = document.getElementById("analyzeButton");
-const cleanButton = document.getElementById("cleanButton");
-const resetButton = document.getElementById("resetButton");
-const removeFileButton = document.getElementById("removeFile");
-const statusElement = document.getElementById("status");
-const results = document.getElementById("results");
-const statsElement = document.getElementById("stats");
-const checksElement = document.getElementById("checks");
-const runtimeStatusElement = document.getElementById("runtimeStatus");
-const appVersionElement = document.getElementById("appVersion");
-const appBuildElement = document.getElementById("appBuild");
-
-const FIT_SUBMISSION_API = "https://garmin-abruf.andigreen.workers.dev/api/fit-submissions";
-let dotNetInterop = null;
-window.fitCleanerInterop = {
-  instance: null,
-  waiter: null,
-  set: function(instance) {
-    this.instance = instance;
-    if (this.waiter) {
-      this.waiter(instance);
-      this.waiter = null;
-    }
-  },
-  wait: function() {
-    if (this.instance) return Promise.resolve(this.instance);
-    return new Promise(resolve => { this.waiter = resolve; });
-  }
-};
-let selectedFile = null;
-let analysisComplete = false;
-let cleanedBlob = null;
-let cleanedFileName = "";
-let runtimeAvailable = false;
-let runtimeError = null;
-const fitRuntimeReady = startFitRuntime();
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-}
-
-function setStatus(message, type) {
-  statusElement.textContent = message;
-  statusElement.className = ("status " + (type || "")).trim();
-}
-
-function shortErrorMessage(error) {
-  const message = (error && error.message) ? error.message : String(error);
-  return message.split(/\r?\n/)[0].slice(0, 240);
-}
-
-async function withTimeout(promise, timeoutMs, timeoutMessage) {
-  let timeoutId;
-  try {
-    return await Promise.race([
-      Promise.resolve(promise),
-      new Promise(function(_, reject) {
-        timeoutId = setTimeout(function() {
-          reject(new Error(timeoutMessage));
-        }, timeoutMs);
-      })
-    ]);
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-async function invokeDotNet(methodName, args, timeoutMs, timeoutMessage) {
-  if (!window.DotNet || typeof window.DotNet.invokeMethodAsync !== "function") {
-    throw new Error("The .NET JavaScript interface was not initialized.");
-  }
-  if (!dotNetInterop || typeof dotNetInterop.invokeMethodAsync !== "function") {
-    throw new Error("The FIT processor is not connected yet.");
-  }
-  return withTimeout(
-    dotNetInterop.invokeMethodAsync(methodName, ...args),
-    timeoutMs,
-    timeoutMessage
-  );
-}
-
-async function startFitRuntime() {
-  runtimeStatusElement.textContent = "Starting WebAssembly…";
-  runtimeStatusElement.className = "status";
-  try {
-    if (!window.Blazor || typeof window.Blazor.start !== "function") {
-      throw new Error("The Blazor runtime file did not load.");
-    }
-
-    await withTimeout(
-      window.Blazor.start(),
-      30000,
-      "Timed out while starting the WebAssembly runtime after 30 seconds."
-    );
-
-    dotNetInterop = await withTimeout(
-      window.fitCleanerInterop.wait(),
-      15000,
-      "The FIT processor component was not initialized."
-    );
-    const ping = await invokeDotNet(
-      "Ping",
-      [],
-      15000,
-      "The WebAssembly runtime did not respond to the connection test."
-    );
-
-    if (ping !== "FIT_CLEANER_READY") {
-      throw new Error("The FIT processor connection test returned an invalid response.");
-    }
-
-    runtimeAvailable = true;
-    runtimeError = null;
-    runtimeStatusElement.textContent = "FIT processor ready. The file is processed locally in your browser only.";
-    runtimeStatusElement.className = "status success";
-    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-    return true;
-  } catch (error) {
-    runtimeAvailable = false;
-    runtimeError = error;
-    console.error("FIT Cleaner startup failed", error);
-    runtimeStatusElement.textContent = "FIT processor not ready: " + shortErrorMessage(error);
-    runtimeStatusElement.className = "status error";
-    analyzeButton.disabled = true;
-    return false;
-  }
-}
-
-async function loadVersion() {
-  try {
-    const response = await fetch("version.json", { cache: "no-store" });
-    if (!response.ok) throw new Error("Version metadata not available");
-    const version = await response.json();
-    appVersionElement.textContent = version.version || "unknown";
-    appBuildElement.textContent = (version.build || "unknown") +
-      (version.run ? " · Run " + version.run : "");
-  } catch (_) {
-    appBuildElement.textContent = "Build unknown";
-  }
-}
-
-loadVersion();
-
-function resetAnalysis() {
-  analysisComplete = false;
-  cleanedBlob = null;
-  cleanedFileName = "";
-  results.classList.remove("visible");
-  document.getElementById("contributePanel").hidden = true;
-  document.getElementById("donateConsent").checked = false;
-  document.getElementById("sendFitButton").disabled = true;
-  document.getElementById("sendStatus").textContent = "";
-  cleanButton.disabled = false;
-  analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-}
-
-function selectFile(file) {
-  if (!file) return;
-  if (!file.name.toLowerCase().endsWith(".fit")) {
-    setStatus("Please select a file with the .fit extension.", "error");
-    return;
-  }
-  if (file.size > 50 * 1024 * 1024) {
-    setStatus("The file is larger than 50 MB.", "error");
-    return;
-  }
-  if (file.size === 0) {
-    setStatus("The selected file is empty.", "error");
-    return;
-  }
-
-  selectedFile = file;
-  fileName.textContent = file.name;
-  fileSize.textContent = formatBytes(file.size);
-  fileCard.classList.add("visible");
-  resetAnalysis();
-  setStatus("File selected.", "");
-}
-
-function clearFile() {
-  selectedFile = null;
-  fileInput.value = "";
-  fileCard.classList.remove("visible");
-  analyzeButton.disabled = true;
-  resetAnalysis();
-  setStatus("", "");
-}
-
-function fileToBase64(arrayBuffer) {
-  const bytes = new Uint8Array(arrayBuffer);
-  let binary = "";
-  const chunkSize = 0x8000;
-  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
-  }
-  return btoa(binary);
-}
-
-function base64ToBytes(base64) {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  const chunkSize = 0x8000;
-  for (let offset = 0; offset < binary.length; offset += chunkSize) {
-    const end = Math.min(binary.length, offset + chunkSize);
-    for (let i = offset; i < end; i++) bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function sendFile(url, includeOptions) {
-  const ready = await fitRuntimeReady;
-  if (!ready) {
-    throw new Error("The FIT processor could not be started. " +
-      (runtimeError && runtimeError.message ? runtimeError.message : "Unknown startup error."));
-  }
-
-  const fileBuffer = await selectedFile.arrayBuffer();
-  if (!fileBuffer || fileBuffer.byteLength === 0) {
-    throw new Error("The selected FIT file could not be read.");
-  }
-  const base64 = fileToBase64(fileBuffer);
-  if (!base64) throw new Error("The FIT file could not be prepared for local analysis.");
-  if (!includeOptions) {
-    setStatus("File loaded. Analysing FIT data locally…", "");
-    const json = await invokeDotNet(
-      "Analyze",
-      [base64],
-      60000,
-      "The FIT processor did not respond within 60 seconds."
-    );
-    return new Response(json, { headers: { "Content-Type": "application/json" } });
-  }
-
-  setStatus("Cleaning FIT data locally…", "");
-  const json = await invokeDotNet(
-    "Clean",
-    [
-      base64,
-      document.getElementById("removeGps").checked,
-      document.getElementById("removeDevice").checked
-    ],
-    60000,
-    "The FIT processor did not respond within 60 seconds."
-  );
-  const result = JSON.parse(json);
-  const bytes = base64ToBytes(result.fileBase64);
-  return new Response(bytes, {
-    headers: {
-      "Content-Type": "application/octet-stream",
-      "X-Removed-Gps-Fields": String(result.removedGpsFields || 0),
-      "X-Removed-Identifier-Fields": String(result.removedIdentifierFields || 0),
-      "X-Removed-Metadata-Messages": String(result.removedMetadataMessages || 0),
-      "X-Removed-Developer-Fields": String(result.removedDeveloperFields || 0)
-    }
-  });
-}
-
-function renderAnalysis(data) {
-  const statItems = [
-    ["Records", data.recordCount],
-    ["Laps", data.lapCount],
-    ["Sessions", data.sessionCount],
-    ["FIT messages", data.messageCount]
-  ];
-
-  statsElement.innerHTML = statItems.map(function(item) {
-    return '<div class="stat"><strong>' + Number(item[1]).toLocaleString("en-GB") +
-      '</strong><span>' + item[0] + '</span></div>';
-  }).join("");
-
-  const signals = [
-    ["GPS data", data.hasGps],
-    ["Heart rate", data.hasHeartRate],
-    ["Power", data.hasPower],
-    ["Cadence", data.hasCadence],
-    ["Speed", data.hasSpeed],
-    ["Device information", data.deviceInfoMessageCount > 0],
-    ["User profile", data.userProfileMessageCount > 0],
-    ["Developer fields", data.developerFieldCount > 0]
-  ];
-
-  checksElement.innerHTML = signals.map(function(item) {
-    const present = item[1];
-    return '<span class="check ' + (present ? "yes" : "") + '">' +
-      (present ? "Present" : "Not present") + " · " + item[0] + '</span>';
-  }).join("");
-
-  results.classList.add("visible");
-  analysisComplete = true;
-  cleanButton.disabled = false;
-}
-
-dropzone.addEventListener("click", function() { fileInput.click(); });
-dropzone.addEventListener("keydown", function(event) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    fileInput.click();
-  }
-});
-fileInput.addEventListener("change", function() { selectFile(fileInput.files[0]); });
-removeFileButton.addEventListener("click", clearFile);
-resetButton.addEventListener("click", clearFile);
-
-["dragenter", "dragover"].forEach(function(eventName) {
-  dropzone.addEventListener(eventName, function(event) {
-    event.preventDefault();
-    dropzone.classList.add("dragover");
-  });
-});
-["dragleave", "drop"].forEach(function(eventName) {
-  dropzone.addEventListener(eventName, function(event) {
-    event.preventDefault();
-    dropzone.classList.remove("dragover");
-  });
-});
-dropzone.addEventListener("drop", function(event) {
-  selectFile(event.dataTransfer.files[0]);
-});
-
-analyzeButton.addEventListener("click", async function() {
-  if (!selectedFile) return;
-  analyzeButton.disabled = true;
-  cleanButton.disabled = true;
-  setStatus("Checking FIT file…", "");
-  try {
-    const response = await sendFile("/api/analyze", false);
-    const data = await response.json();
-    renderAnalysis(data);
-    setStatus("Analysis successful.", "success");
-  } catch (error) {
-    resetAnalysis();
-    setStatus(error.message, "error");
-  } finally {
-    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-  }
-});
-
-cleanButton.addEventListener("click", async function() {
-  if (!selectedFile || !analysisComplete) return;
-  cleanButton.disabled = true;
-  analyzeButton.disabled = true;
-  setStatus("Cleaning and checking FIT file…", "");
-  try {
-    const response = await sendFile("/api/anonymize", true);
-    const blob = await response.blob();
-    const baseName = selectedFile.name.replace(/\.fit$/i, "");
-    cleanedBlob = blob;
-    cleanedFileName = baseName + "_anonymized.fit";
-    document.getElementById("contributePanel").hidden = false;
-    document.getElementById("sendFitButton").disabled = !document.getElementById("donateConsent").checked;
-    const fileUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = baseName + "_anonymized.fit";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(fileUrl);
-
-    const gps = Number(response.headers.get("X-Removed-Gps-Fields") || 0);
-    const identifiers = Number(response.headers.get("X-Removed-Identifier-Fields") || 0);
-    const metadata = Number(response.headers.get("X-Removed-Metadata-Messages") || 0);
-    const developer = Number(response.headers.get("X-Removed-Developer-Fields") || 0);
-    const summary = "Removed: " + gps + " GPS fields, " + identifiers +
-      " identifier fields, " + metadata + " metadata messages and " +
-      developer + " developer fields. Download started.";
-    setStatus(summary, "success");
-  } catch (error) {
-    setStatus(error.message, "error");
-  } finally {
-    cleanButton.disabled = false;
-    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-  }
-});
-
-document.getElementById("donateConsent").addEventListener("change", function() {
-  document.getElementById("sendFitButton").disabled = !cleanedBlob || !this.checked;
-});
-document.getElementById("sendFitButton").addEventListener("click", async function() {
-  if (!cleanedBlob || !document.getElementById("donateConsent").checked) return;
-  if (cleanedBlob.size > 2 * 1024 * 1024) {
-    const status = document.getElementById("sendStatus");
-    status.textContent = "The cleaned file is larger than 2 MB and cannot be submitted.";
-    status.className = "status error";
-    return;
-  }
-  const button = this;
-  const status = document.getElementById("sendStatus");
-  button.disabled = true;
-  status.textContent = "Uploading cleaned FIT file…";
-  status.className = "status";
-  try {
-    const form = new FormData();
-    form.append("file", new File([cleanedBlob], cleanedFileName, { type: "application/octet-stream" }));
-    form.append("cleaned", "true");
-    form.append("sport", document.getElementById("donateSport").value);
-    form.append("comment", document.getElementById("donateComment").value.trim());
-    form.append("name", document.getElementById("donateName").value.trim());
-    form.append("contact", document.getElementById("donateContact").value.trim());
-    form.append("website", document.getElementById("donateWebsite").value);
-    const response = await fetch(FIT_SUBMISSION_API, { method: "POST", body: form });
-    const result = await response.json().catch(function() { return {}; });
-    if (!response.ok) throw new Error(result.message || result.error || ("HTTP " + response.status));
-    status.textContent = "Thank you. The cleaned FIT file has been submitted to the SurfsApp development team.";
-    status.className = "status success";
-    document.getElementById("donateConsent").checked = false;
-    document.getElementById("sendStatus").setAttribute("data-submission-id", result.id || "");
-  } catch (error) {
-    status.textContent = error.message || "The FIT file could not be submitted.";
-    status.className = "status error";
-    button.disabled = false;
-  }
-});
+<script src="cleaner-flow.js?v=1.1.0"></script>
 </script>
 </body>
 </html>

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<base href="/Fit-Privacy-Cleaner/?lang=de">
+<base href="/Fit-Privacy-Cleaner/">
 <meta name="theme-color" content="#08111f">
-<script>(function(){let lang=new URLSearchParams(location.search).get("lang");try{if(lang!=="de"&&lang!=="en")lang=localStorage.getItem("surfsapp-language");if(lang!=="de"&&lang!=="en")lang=(navigator.language||"").toLowerCase().startsWith("en")?"en":"de";if(lang==="en"){location.replace("index.en.html"+location.hash);return;}localStorage.setItem("surfsapp-language","de");}catch(e){}})();</script>
+<script>(function(){let lang=new URLSearchParams(location.search).get("lang");try{if(lang!=="de"&&lang!=="en")lang=localStorage.getItem("surfsapp-language");if(lang!=="de"&&lang!=="en")lang=(navigator.language||"").toLowerCase().startsWith("en")?"en":"de";if(lang==="en"){location.replace("/Fit-Privacy-Cleaner/release-1.1.0/index.en.html"+location.search+location.hash);return;}localStorage.setItem("surfsapp-language","de");}catch(e){}})();</script>
 <meta name="description" content="Garmin FIT Dateien analysieren und persönliche Daten gezielt entfernen.">
 <title>FIT Privacy Cleaner</title>
 <style>
@@ -91,116 +91,200 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
 @media(max-width:650px){.shell{width:min(100% - 24px,1040px);padding-top:20px}header{margin-bottom:38px}.local-pill{font-size:0;padding:10px}.local-pill:before{margin:0}.options{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.action-row{align-items:stretch;flex-direction:column}.action-row button{width:100%}footer{flex-direction:column}h1{font-size:42px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
 .language-switch{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:4px;background:rgba(7,17,31,.45)}.language-switch a{display:inline-block;padding:5px 9px;border-radius:999px;color:var(--muted);font-size:11px;font-weight:800;text-decoration:none}.language-switch a.active{background:var(--accent);color:#07211f}
+
+/* FIT Cleaner 1.1 workflow refinements */
+header{margin-bottom:28px;align-items:center}
+.brand{gap:14px}
+.brand-mark{width:62px;height:62px;flex-basis:62px}
+.brand-mark img{width:62px;height:62px}
+.brand-title{display:flex;flex-direction:column;gap:2px}
+.brand-title strong{font-size:18px;line-height:1.15;letter-spacing:.045em}
+.brand-title span{font-size:11px;color:var(--soft);font-weight:500;letter-spacing:0}
+.top-tools{display:flex;align-items:center;gap:10px}
+.hero{margin-bottom:22px}
+.hero h1{font-size:clamp(30px,4.2vw,46px);line-height:1.08;letter-spacing:-.04em}
+.hero .lead{font-size:14px;margin-top:12px;max-width:650px}
+.workspace{padding:clamp(16px,3vw,30px)}
+#uploadSection{scroll-margin-top:18px}
+#privacySection,#results,#cleanedPanel{scroll-margin-top:18px}
+.dropzone{min-height:108px;display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:14px;align-items:center;justify-content:initial;text-align:left;padding:16px 20px}
+.dropzone .upload-icon{width:42px;height:42px;margin:0;border-radius:13px}
+.dropzone .upload-icon svg{width:22px;height:22px}
+.dropzone-copy{min-width:0}
+.dropzone strong{font-size:14px}
+.dropzone p{margin:2px 0 0;font-size:12px}
+.dropzone .file-types{margin:0;white-space:nowrap;font-size:10px}
+.file-card{margin-top:10px;padding:11px 14px}
+.privacy-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.privacy-section .section-head{margin:0 0 14px}
+.option{display:block;padding:15px 16px}
+.option-top{display:flex;gap:11px;align-items:flex-start}
+.option-top input{margin-top:3px}
+.option-copy{min-width:0}
+.option-copy label{display:block;cursor:pointer}
+.option-copy strong{font-size:13px}
+.option-copy small{font-size:11px}
+.option-chips{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0 0 30px}
+.option-chips span,.preview-tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted);font-size:10px;line-height:1.3}
+.privacy-preview{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:14px;padding:14px 16px;border:1px solid rgba(80,224,202,.22);border-radius:15px;background:rgba(80,224,202,.055)}
+.privacy-preview strong{font-size:13px}
+.privacy-preview p{color:var(--muted);font-size:12px;margin:4px 0 0}
+.preview-tags{display:flex;flex-wrap:wrap;gap:6px}
+.preview-tag{border-color:rgba(80,224,202,.22);color:var(--accent);background:rgba(80,224,202,.04)}
+.always-strip,.preserve-strip{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:11px 14px;border:1px solid var(--line);border-radius:13px;background:rgba(7,17,31,.32)}
+.always-strip strong,.preserve-strip strong{display:block;font-size:12px}
+.always-strip p,.preserve-strip p{margin:3px 0 0;color:var(--soft);font-size:11px}
+.always-icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:8px;background:rgba(80,224,202,.1);color:var(--accent);font-size:13px;font-weight:800}
+#analyzeButton{min-width:190px}
+#runtimeStatus{margin-top:10px}
+.analysis-explanation{display:grid;gap:10px;margin-top:16px}
+.analysis-message{padding:13px 15px;border:1px solid rgba(123,182,255,.2);border-radius:14px;background:rgba(123,182,255,.055)}
+.analysis-message strong{font-size:12px}
+.analysis-message p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.analysis-item{padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:rgba(7,17,31,.3)}
+.analysis-item strong{display:block;font-size:11px}
+.analysis-item span{display:block;margin-top:3px;color:var(--soft);font-size:11px;line-height:1.4}
+.analysis-item.found strong{color:var(--accent)}
+.analysis-item.clear strong{color:var(--success)}
+.analysis-kept{padding:12px 14px;border:1px solid rgba(121,225,168,.2);border-radius:13px;background:rgba(121,225,168,.045)}
+.analysis-kept strong{font-size:12px}
+.analysis-kept p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.clean-row{align-items:center}
+.clean-note{max-width:540px;font-size:12px;line-height:1.5}
+.cleaned-panel{margin-top:20px;padding:18px;border:1px solid rgba(121,225,168,.25);border-radius:18px;background:rgba(121,225,168,.045)}
+.cleaned-heading{display:flex;align-items:center;gap:9px}
+.cleaned-heading strong{font-size:15px}
+.cleaned-heading .success-mark{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:rgba(121,225,168,.14);color:var(--success);font-weight:800}
+.cleaned-intro{margin:7px 0 0;color:var(--muted);font-size:12px}
+.cleaned-details{display:grid;gap:7px;margin:14px 0 0;padding:0;list-style:none}
+.cleaned-details li{padding:9px 11px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:11px;background:rgba(7,17,31,.28)}
+.post-clean-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.post-clean-actions button{flex:1 1 220px}
+.post-clean-note{margin:9px 0 0;color:var(--soft);font-size:11px}
+.contribute{margin-top:16px;padding:16px;border-color:rgba(80,224,202,.25)}
+.contribute h3{font-size:15px}
+.contribute .form-intro{color:var(--muted);font-size:11px;margin:5px 0 0}
+.contribute-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.contribute-fields label{font-size:11px}
+.contribute-fields select,.contribute-fields textarea,.contribute-fields input{width:100%;min-width:0;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:#0d1a2b;color:var(--text);font:inherit}
+.contribute-fields input::placeholder,.contribute-fields textarea::placeholder{color:var(--soft)}
+.field-hint{display:block;color:var(--accent);font-size:10px;font-weight:650;margin-top:2px}
+.form-privacy-note{margin:9px 0;color:var(--soft);font-size:11px;line-height:1.45}
+.contribute-consent{font-size:11px;line-height:1.45}
+.contribute-consent input{accent-color:var(--accent)}
+#sendFitButton{min-width:230px}
+#sendStatus{font-size:11px}
+@media(max-width:650px){
+ .shell{padding-top:16px}
+ header{margin-bottom:24px}
+ .brand-mark{width:54px;height:54px;flex-basis:54px}
+ .brand-mark img{width:54px;height:54px}
+ .brand-title strong{font-size:15px}
+ .brand-title span{font-size:10px}
+ .top-tools{gap:6px}
+ .local-pill{display:none}
+ .hero{margin-bottom:18px}
+ .hero h1{font-size:34px}
+ .dropzone{min-height:92px;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:13px}
+ .dropzone .upload-icon{width:38px;height:38px}
+ .dropzone .file-types{grid-column:2;margin-top:-3px}
+ .options,.analysis-grid{grid-template-columns:1fr}
+ .option-chips{margin-left:0}
+ .contribute-fields{grid-template-columns:1fr}
+ .post-clean-actions{flex-direction:column}
+ .post-clean-actions button{width:100%}
+}
 </style>
 </head>
 <body>
 <main class="shell">
-  <header>
-    <div class="brand">
-      <div class="brand-mark">
-        <img src="SurfsApp_Symbol_1.png" alt="SurfsApp">
-      </div>
-      <span>FIT PRIVACY CLEANER</span>
+  
+<header>
+  <div class="brand">
+    <div class="brand-mark"><img src="SurfsApp_Symbol_1.png" alt="SurfsApp"></div>
+    <div class="brand-title"><strong>FIT PRIVACY CLEANER</strong><span>FIT Dateien lokal prüfen und bereinigen</span></div>
+  </div>
+  <div class="top-tools">
+    <div class="language-switch" role="group" aria-label="Sprache wählen">
+      <a class="active" href="/Fit-Privacy-Cleaner/release-1.1.0/?lang=de" onclick="localStorage.setItem('surfsapp-language','de')">DE</a>
+      <a href="/Fit-Privacy-Cleaner/release-1.1.0/index.en.html" onclick="localStorage.setItem('surfsapp-language','en')">EN</a>
     </div>
-    <div class="language-switch" role="group" aria-label="Sprache wählen"><a class="active" href="/Fit-Privacy-Cleaner/?lang=de" onclick="localStorage.setItem(&quot;surfsapp-language&quot;,&quot;de&quot;)">DE</a><a href="/Fit-Privacy-Cleaner/index.en.html" onclick="localStorage.setItem(&quot;surfsapp-language&quot;,&quot;en&quot;)">EN</a></div><div class="local-pill">Keine Kontoregistrierung</div>
-  </header>
-
-  <section class="hero">
-    <p class="eyebrow">Deine Aktivität. Deine Daten.</p>
-    <h1>Teile deine Leistung.<br><span>Nicht deine Privatsphäre.</span></h1>
-    <p class="lead">Prüfe deine Garmin FIT Datei, entferne persönliche Metadaten und lade eine bereinigte Datei herunter. Trainingsdaten bleiben erhalten.</p>
-  </section>
-
-  <section class="workspace" aria-labelledby="upload-title">
+    <div class="local-pill">Keine Kontoregistrierung</div>
+  </div>
+</header>
+<section class="hero">
+  <p class="eyebrow">Deine Aktivität. Deine Daten.</p>
+  <h1>Teile deine Leistung.<br><span>Nicht deine Privatsphäre.</span></h1>
+  <p class="lead">Du entscheidest, welche persönlichen Informationen aus deiner FIT Datei entfernt werden. Die Analyse und Bereinigung laufen lokal. Übermittelt wird nur, was du ausdrücklich freigibst.</p>
+</section>
+<section class="workspace" aria-label="FIT Datei bereinigen">
+  <section id="uploadSection">
     <div class="section-head">
-      <div>
-        <h2 id="upload-title">FIT Datei auswählen</h2>
-        <p>Eine Aktivitätsdatei im FIT Format, maximal 50 MB.</p>
-      </div>
+      <div><h2 id="upload-title">FIT Datei auswählen</h2><p>Eine Aktivitätsdatei im FIT Format, maximal 50 MB.</p></div>
       <span class="step">01 / DATEI</span>
     </div>
-
     <input id="fileInput" type="file" accept=".fit,application/octet-stream" hidden>
     <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="FIT Datei auswählen oder hier ablegen">
-      <div class="upload-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-3"/></svg>
-      </div>
-      <strong>Datei hier ablegen</strong>
-      <p>oder klicken, um eine Datei auszuwählen</p>
-      <span class="file-types">.FIT DATEI · BIS 50 MB</span>
+      <div class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-3"/></svg></div>
+      <div class="dropzone-copy"><strong>Datei auswählen oder hier ablegen</strong><p>Die Auswahl startet noch keine Analyse.</p></div>
+      <span class="file-types">.FIT DATEI · MAX. 50 MB</span>
     </div>
-
     <div id="fileCard" class="file-card" aria-live="polite">
-      <div class="file-meta">
-        <div id="fileName" class="file-name"></div>
-        <div id="fileSize" class="file-size"></div>
-      </div>
+      <div class="file-meta"><div id="fileName" class="file-name"></div><div id="fileSize" class="file-size"></div></div>
       <button id="removeFile" class="text-button" type="button">Entfernen</button>
     </div>
-
-    <div class="section-head" style="margin:24px 0 12px">
-      <div>
-        <h2>Bereinigungsumfang</h2>
-        <p>Wähle, welche Informationen entfernt werden sollen. Das Laden der Datei startet noch keine Analyse.</p>
-      </div>
-      <span class="step">02 / PRIVATSPHÄRE</span>
+  </section>
+  <section id="privacySection" class="privacy-section" tabindex="-1">
+    <div class="section-head">
+      <div><h2>Welche Informationen sollen entfernt werden?</h2><p>Wähle die Daten, die nicht in der bereinigten FIT Datei bleiben sollen.</p></div>
+      <span class="step">02 / DATENSCHUTZ</span>
     </div>
-
     <div class="options">
-      <div class="option">
-        <input id="removeDevice" type="checkbox" checked>
-        <label for="removeDevice">
-          <strong>Geräte und Profildaten entfernen</strong>
-          <small>Entfernt Gerätekennungen, Seriennummern, Geräteinformationen, Benutzerprofil und Datei Creator. Nicht standardisierte Entwicklerfelder werden unabhängig von dieser Auswahl immer entfernt.</small>
-        </label>
-      </div>
-      <div class="option">
-        <input id="removeGps" type="checkbox">
-        <label for="removeGps">
-          <strong>GPS Koordinaten entfernen</strong>
-          <small>Entfernt Start, Ziel und Trackkoordinaten. Die Karte und die Streckenansicht stehen danach nicht mehr zur Verfügung.</small>
-        </label>
-      </div>
+      <article class="option">
+        <div class="option-top"><input id="removeDevice" type="checkbox" checked><div class="option-copy"><label for="removeDevice"><strong>Geräte und persönliche Kennungen</strong><small>Entfernt Geräteidentität und persönliche Profilangaben aus der FIT Datei.</small></label></div></div>
+        <div class="option-chips" aria-label="Beispiele"><span>Seriennummer</span><span>Hersteller und Modell</span><span>Geräte ID</span><span>Benutzername und Profil</span><span>Dateiersteller</span><span>E Mail und Kontaktdaten</span></div>
+      </article>
+      <article class="option">
+        <div class="option-top"><input id="removeGps" type="checkbox"><div class="option-copy"><label for="removeGps"><strong>Standort und Streckenverlauf</strong><small>Entfernt GPS Koordinaten, die Rückschlüsse auf deinen Start, dein Ziel und deine Route erlauben.</small></label></div></div>
+        <div class="option-chips" aria-label="Beispiele"><span>Startposition</span><span>Zielposition</span><span>Trackpunkte</span><span>Breiten und Längengrad</span></div>
+      </article>
     </div>
-
-    <div class="action-row">
-      <button id="analyzeButton" class="primary" type="button" disabled>Datei analysieren</button>
-      <button id="resetButton" class="secondary" type="button">Zurücksetzen</button>
-      <span id="status" class="status" role="status" aria-live="polite"></span>
-    </div>
+    <div class="privacy-preview" aria-live="polite"><div><strong>Das wird aus deiner FIT Datei entfernt</strong><p id="privacyPreviewText">Deine Auswahl wird hier konkret zusammengefasst.</p></div><div id="privacyPreviewList" class="preview-tags"></div></div>
+    <div class="always-strip"><span class="always-icon" aria-hidden="true">✓</span><div><strong>Immer entfernt: nicht standardisierte Entwicklerdaten</strong><p>Zusatzfelder von Drittanbieter Apps und ihre Feldbeschreibungen werden grundsätzlich entfernt. Sie können beliebige persönliche Inhalte enthalten und lassen sich nicht zuverlässig einzeln einordnen.</p></div></div>
+    <div class="preserve-strip"><span class="always-icon" aria-hidden="true">↗</span><div><strong>Deine Trainingsdaten bleiben erhalten</strong><p>Zeit, Distanz, Geschwindigkeit, Herzfrequenz, Leistung, Kadenz, Runden und Sessions bleiben. Nur die oben ausgewählten privaten Angaben und Entwicklerfelder werden entfernt.</p></div></div>
+    <div class="action-row"><button id="analyzeButton" class="primary" type="button" disabled>Datei analysieren</button><button id="resetButton" class="secondary" type="button">Zurücksetzen</button><span id="status" class="status" role="status" aria-live="polite"></span></div>
     <div id="runtimeStatus" class="status" role="status" aria-live="polite">FIT Prozessor wird initialisiert …</div>
-
-    <section id="results" class="results" aria-labelledby="analysis-title">
-      <h3 id="analysis-title">Analyse abgeschlossen</h3>
-      <p class="results-intro">Die Daten wurden tatsächlich aus der FIT Datei gelesen. Es werden keine Merkmale pauschal als vorhanden markiert.</p>
-      <div id="stats" class="stats"></div>
-      <div id="checks" class="checks"></div>
-      <div class="clean-row">
-        <div class="clean-note">Die bereinigte Datei wird neu aufgebaut, ihre FIT Prüfsumme wird aktualisiert und das Ergebnis wird anschließend erneut eingelesen und geprüft.</div>
-        <button id="cleanButton" class="primary" type="button">Bereinigen und herunterladen</button>
-      </div>
-      <div id="contributePanel" class="contribute" hidden>
-        <h3>FIT zur Weiterentwicklung beitragen</h3>
-        <p>Nach erfolgreicher Bereinigung kannst du die bereinigte Datei bis 2 MB freiwillig an die SurfsApp Entwicklung senden. Sie wird privat gespeichert und ist nur für den Betreiber sichtbar. GPS Daten bleiben enthalten, sofern du sie beim Bereinigen nicht entfernt hast.</p>
-        <div class="contribute-fields">
-          <label for="donateSport">Sportart
-            <select id="donateSport"><option>Windsurfen</option><option>Wingen</option><option>Surfen</option><option>Sonstiges</option></select>
-          </label>
-          <label for="donateComment">Kommentar, zum Beispiel gesuchtes Manöver
-            <textarea id="donateComment" rows="2" maxlength="1000" placeholder="Zum Beispiel: Pushloop, Backloop oder spezielle Halsen"></textarea>
-          </label>
-          <label for="donateName">Name (optional)
-            <input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Dein Name">
-          </label>
-          <label for="donateContact">E Mail Adresse (optional)
-            <input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com">
-          </label>
-        </div>
-        <label class="contribute-consent"><input type="checkbox" id="donateConsent"> Ich möchte diese bereinigte FIT Datei freiwillig übermitteln. Mir ist bewusst, dass GPS Daten enthalten sein können, wenn ich sie nicht entfernt habe.</label>
-        <div class="action-row"><button id="sendFitButton" class="secondary" type="button" disabled>Bereinigte FIT Datei senden</button><span id="sendStatus" class="status" role="status" aria-live="polite"></span></div>
-        <div class="honeypot" aria-hidden="true"><label for="donateWebsite">Website<input id="donateWebsite" tabindex="-1" autocomplete="off"></label></div>
-      </div>
+  </section>
+  <section id="results" class="results" aria-labelledby="analysis-title">
+    <h3 id="analysis-title">Das steckt in deiner FIT Datei</h3>
+    <p class="results-intro">Die Analyse liest die Datei nur aus. Es wird noch nichts verändert oder übertragen.</p>
+    <div id="stats" class="stats"></div><div id="checks" class="checks"></div><div id="analysisExplanation" class="analysis-explanation"></div>
+    <div class="clean-row"><div class="clean-note">Passt die Auswahl? Mit „Jetzt bereinigen“ wird eine neue FIT Datei erstellt und anschließend erneut geprüft. Deine Originaldatei bleibt unverändert.</div><button id="cleanButton" class="primary" type="button" disabled>Jetzt bereinigen</button></div>
+    <section id="cleanedPanel" class="cleaned-panel" hidden>
+      <div class="cleaned-heading"><span class="success-mark">✓</span><strong>Bereinigung abgeschlossen</strong></div>
+      <p id="cleanSummaryText" class="cleaned-intro">Die bereinigte FIT Datei wurde lokal erstellt. Es wurde noch nichts übermittelt.</p>
+      <ul id="cleanedDetails" class="cleaned-details"></ul>
+      <div class="post-clean-actions"><button id="downloadButton" class="secondary" type="button">Bereinigte Datei herunterladen</button><button id="jumpToSendButton" class="primary" type="button">Datei an SurfsApp senden</button></div>
+      <p class="post-clean-note">Du kannst die Datei herunterladen oder freiwillig zur Weiterentwicklung beitragen. Ohne deine ausdrückliche Zustimmung wird nichts übertragen.</p>
+      <section id="contributePanel" class="contribute" aria-labelledby="contributeTitle">
+        <h3 id="contributeTitle">Zur Weiterentwicklung beitragen</h3>
+        <p class="form-intro">Deine bereinigte Datei hilft, Funktionen wie die Erkennung von Halsen, Sprüngen und Wellenritten zu verbessern. Die Angaben unten erleichtern Rückfragen und die Zuordnung.</p>
+        <form id="donateForm">
+          <div class="contribute-fields">
+            <label for="donateSport">Sportart <span class="field-hint">Bitte auswählen</span><select id="donateSport" required><option value="" selected disabled>Sportart auswählen</option><option value="Windsurfen">Windsurfen</option><option value="Wingen">Wingen</option><option value="Surfen">Surfen</option><option value="Sonstiges">Sonstiges</option></select></label>
+            <label for="donateComment">Was soll ich mir ansehen? <span class="field-hint">Optional, aber hilfreich</span><textarea id="donateComment" rows="2" maxlength="1000" placeholder="Zum Beispiel: Pushloop, Backloop oder eine spezielle Halse"></textarea></label>
+            <label for="donateName">Dein Name <span class="field-hint">Name oder E Mail für Rückfragen angeben</span><input id="donateName" type="text" maxlength="100" autocomplete="name" placeholder="Vorname oder Kürzel"></label>
+            <label for="donateContact">Kontakt E Mail<input id="donateContact" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com"></label>
+          </div>
+          <p class="form-privacy-note">Name oder E Mail Adresse werden empfohlen und mindestens eine Angabe wird für Rückfragen benötigt. Diese Angaben werden separat mit der Einsendung übermittelt und nicht in die FIT Datei geschrieben.</p>
+          <label class="contribute-consent"><input type="checkbox" id="donateConsent" required> Ich möchte diese bereinigte FIT Datei freiwillig an die SurfsApp Entwicklung senden. Mir ist bewusst, dass GPS Daten enthalten bleiben können, wenn ich sie nicht ausgewählt habe.</label>
+          <div class="action-row"><button id="sendFitButton" class="primary" type="submit" disabled>Bereinigte FIT Datei senden</button><span id="sendStatus" class="status" role="status" aria-live="polite"></span></div>
+          <div class="honeypot" aria-hidden="true"><label for="donateWebsite">Website<input id="donateWebsite" tabindex="-1" autocomplete="off"></label></div>
+        </form>
+      </section>
     </section>
+  </section>
 
     <div class="privacy">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
@@ -212,7 +296,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
   </section>
 
   <footer>
-    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.0.4</span> · Build <span id="appBuild">wird geladen</span></span>
+    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.1.0</span> · Build <span id="appBuild">wird geladen</span></span>
     <span>Die Originaldatei bleibt unverändert.</span>
   </footer>
 </main>
@@ -220,426 +304,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
 <div id="app" hidden aria-hidden="true"></div>
 <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script>
-const fileInput = document.getElementById("fileInput");
-const dropzone = document.getElementById("dropzone");
-const fileCard = document.getElementById("fileCard");
-const fileName = document.getElementById("fileName");
-const fileSize = document.getElementById("fileSize");
-const analyzeButton = document.getElementById("analyzeButton");
-const cleanButton = document.getElementById("cleanButton");
-const resetButton = document.getElementById("resetButton");
-const removeFileButton = document.getElementById("removeFile");
-const statusElement = document.getElementById("status");
-const results = document.getElementById("results");
-const statsElement = document.getElementById("stats");
-const checksElement = document.getElementById("checks");
-const runtimeStatusElement = document.getElementById("runtimeStatus");
-const appVersionElement = document.getElementById("appVersion");
-const appBuildElement = document.getElementById("appBuild");
-
-const FIT_SUBMISSION_API = "https://garmin-abruf.andigreen.workers.dev/api/fit-submissions";
-let dotNetInterop = null;
-window.fitCleanerInterop = {
-  instance: null,
-  waiter: null,
-  set: function(instance) {
-    this.instance = instance;
-    if (this.waiter) {
-      this.waiter(instance);
-      this.waiter = null;
-    }
-  },
-  wait: function() {
-    if (this.instance) return Promise.resolve(this.instance);
-    return new Promise(resolve => { this.waiter = resolve; });
-  }
-};
-let selectedFile = null;
-let analysisComplete = false;
-let cleanedBlob = null;
-let cleanedFileName = "";
-let runtimeAvailable = false;
-let runtimeError = null;
-const fitRuntimeReady = startFitRuntime();
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-}
-
-function setStatus(message, type) {
-  statusElement.textContent = message;
-  statusElement.className = ("status " + (type || "")).trim();
-}
-
-function shortErrorMessage(error) {
-  const message = (error && error.message) ? error.message : String(error);
-  return message.split(/\r?\n/)[0].slice(0, 240);
-}
-
-async function withTimeout(promise, timeoutMs, timeoutMessage) {
-  let timeoutId;
-  try {
-    return await Promise.race([
-      Promise.resolve(promise),
-      new Promise(function(_, reject) {
-        timeoutId = setTimeout(function() {
-          reject(new Error(timeoutMessage));
-        }, timeoutMs);
-      })
-    ]);
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-async function invokeDotNet(methodName, args, timeoutMs, timeoutMessage) {
-  if (!window.DotNet || typeof window.DotNet.invokeMethodAsync !== "function") {
-    throw new Error("Die .NET JavaScript Schnittstelle wurde nicht initialisiert.");
-  }
-  if (!dotNetInterop || typeof dotNetInterop.invokeMethodAsync !== "function") {
-    throw new Error("Der FIT Prozessor ist noch nicht verbunden.");
-  }
-  return withTimeout(
-    dotNetInterop.invokeMethodAsync(methodName, ...args),
-    timeoutMs,
-    timeoutMessage
-  );
-}
-
-async function startFitRuntime() {
-  runtimeStatusElement.textContent = "WebAssembly wird gestartet …";
-  runtimeStatusElement.className = "status";
-  try {
-    if (!window.Blazor || typeof window.Blazor.start !== "function") {
-      throw new Error("Die Blazor Laufzeitdatei wurde nicht geladen.");
-    }
-
-    await withTimeout(
-      window.Blazor.start(),
-      30000,
-      "Zeitüberschreitung beim Start der WebAssembly Laufzeit nach 30 Sekunden."
-    );
-
-    dotNetInterop = await withTimeout(
-      window.fitCleanerInterop.wait(),
-      15000,
-      "Die FIT Prozessor Komponente wurde nicht initialisiert."
-    );
-    const ping = await invokeDotNet(
-      "Ping",
-      [],
-      15000,
-      "Die WebAssembly Laufzeit antwortet nicht auf den Verbindungstest."
-    );
-
-    if (ping !== "FIT_CLEANER_READY") {
-      throw new Error("Der Verbindungstest des FIT Prozessors lieferte eine ungültige Antwort.");
-    }
-
-    runtimeAvailable = true;
-    runtimeError = null;
-    runtimeStatusElement.textContent = "FIT Prozessor bereit. Die Datei wird ausschließlich lokal im Browser verarbeitet.";
-    runtimeStatusElement.className = "status success";
-    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-    return true;
-  } catch (error) {
-    runtimeAvailable = false;
-    runtimeError = error;
-    console.error("FIT Cleaner startup failed", error);
-    runtimeStatusElement.textContent = "FIT Prozessor nicht bereit: " + shortErrorMessage(error);
-    runtimeStatusElement.className = "status error";
-    analyzeButton.disabled = true;
-    return false;
-  }
-}
-
-async function loadVersion() {
-  try {
-    const response = await fetch("version.json", { cache: "no-store" });
-    if (!response.ok) throw new Error("Version metadata not available");
-    const version = await response.json();
-    appVersionElement.textContent = version.version || "unbekannt";
-    appBuildElement.textContent = (version.build || "unbekannt") +
-      (version.run ? " · Run " + version.run : "");
-  } catch (_) {
-    appBuildElement.textContent = "Build unbekannt";
-  }
-}
-
-loadVersion();
-
-function resetAnalysis() {
-  analysisComplete = false;
-  cleanedBlob = null;
-  cleanedFileName = "";
-  results.classList.remove("visible");
-  document.getElementById("contributePanel").hidden = true;
-  document.getElementById("donateConsent").checked = false;
-  document.getElementById("sendFitButton").disabled = true;
-  document.getElementById("sendStatus").textContent = "";
-  cleanButton.disabled = false;
-  analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-}
-
-function selectFile(file) {
-  if (!file) return;
-  if (!file.name.toLowerCase().endsWith(".fit")) {
-    setStatus("Bitte eine Datei mit der Endung .fit auswählen.", "error");
-    return;
-  }
-  if (file.size > 50 * 1024 * 1024) {
-    setStatus("Die Datei ist größer als 50 MB.", "error");
-    return;
-  }
-  if (file.size === 0) {
-    setStatus("Die ausgewählte Datei ist leer.", "error");
-    return;
-  }
-
-  selectedFile = file;
-  fileName.textContent = file.name;
-  fileSize.textContent = formatBytes(file.size);
-  fileCard.classList.add("visible");
-  resetAnalysis();
-  setStatus("Datei ausgewählt.", "");
-}
-
-function clearFile() {
-  selectedFile = null;
-  fileInput.value = "";
-  fileCard.classList.remove("visible");
-  analyzeButton.disabled = true;
-  resetAnalysis();
-  setStatus("", "");
-}
-
-function fileToBase64(arrayBuffer) {
-  const bytes = new Uint8Array(arrayBuffer);
-  let binary = "";
-  const chunkSize = 0x8000;
-  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
-  }
-  return btoa(binary);
-}
-
-function base64ToBytes(base64) {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  const chunkSize = 0x8000;
-  for (let offset = 0; offset < binary.length; offset += chunkSize) {
-    const end = Math.min(binary.length, offset + chunkSize);
-    for (let i = offset; i < end; i++) bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function sendFile(url, includeOptions) {
-  const ready = await fitRuntimeReady;
-  if (!ready) {
-    throw new Error("Der FIT Prozessor konnte nicht gestartet werden. " +
-      (runtimeError && runtimeError.message ? runtimeError.message : "Unbekannter Startfehler."));
-  }
-
-  const fileBuffer = await selectedFile.arrayBuffer();
-  if (!fileBuffer || fileBuffer.byteLength === 0) {
-    throw new Error("Die ausgewählte FIT Datei konnte nicht gelesen werden.");
-  }
-  const base64 = fileToBase64(fileBuffer);
-  if (!base64) throw new Error("Die FIT Datei konnte nicht für die lokale Analyse vorbereitet werden.");
-  if (!includeOptions) {
-    setStatus("Datei wurde eingelesen. FIT Daten werden lokal analysiert …", "");
-    const json = await invokeDotNet(
-      "Analyze",
-      [base64],
-      60000,
-      "Der FIT Prozessor hat nach 60 Sekunden nicht geantwortet."
-    );
-    return new Response(json, { headers: { "Content-Type": "application/json" } });
-  }
-
-  setStatus("FIT Daten werden lokal bereinigt …", "");
-  const json = await invokeDotNet(
-    "Clean",
-    [
-      base64,
-      document.getElementById("removeGps").checked,
-      document.getElementById("removeDevice").checked
-    ],
-    60000,
-    "Der FIT Prozessor hat nach 60 Sekunden nicht geantwortet."
-  );
-  const result = JSON.parse(json);
-  const bytes = base64ToBytes(result.fileBase64);
-  return new Response(bytes, {
-    headers: {
-      "Content-Type": "application/octet-stream",
-      "X-Removed-Gps-Fields": String(result.removedGpsFields || 0),
-      "X-Removed-Identifier-Fields": String(result.removedIdentifierFields || 0),
-      "X-Removed-Metadata-Messages": String(result.removedMetadataMessages || 0),
-      "X-Removed-Developer-Fields": String(result.removedDeveloperFields || 0)
-    }
-  });
-}
-
-function renderAnalysis(data) {
-  const statItems = [
-    ["Datensätze", data.recordCount],
-    ["Runden", data.lapCount],
-    ["Sessions", data.sessionCount],
-    ["FIT Nachrichten", data.messageCount]
-  ];
-
-  statsElement.innerHTML = statItems.map(function(item) {
-    return '<div class="stat"><strong>' + Number(item[1]).toLocaleString("de-DE") +
-      '</strong><span>' + item[0] + '</span></div>';
-  }).join("");
-
-  const signals = [
-    ["GPS Daten", data.hasGps],
-    ["Herzfrequenz", data.hasHeartRate],
-    ["Leistung", data.hasPower],
-    ["Kadenz", data.hasCadence],
-    ["Geschwindigkeit", data.hasSpeed],
-    ["Geräteinformationen", data.deviceInfoMessageCount > 0],
-    ["Benutzerprofil", data.userProfileMessageCount > 0],
-    ["Entwicklerfelder", data.developerFieldCount > 0]
-  ];
-
-  checksElement.innerHTML = signals.map(function(item) {
-    const present = item[1];
-    return '<span class="check ' + (present ? "yes" : "") + '">' +
-      (present ? "Vorhanden" : "Nicht vorhanden") + " · " + item[0] + '</span>';
-  }).join("");
-
-  results.classList.add("visible");
-  analysisComplete = true;
-  cleanButton.disabled = false;
-}
-
-dropzone.addEventListener("click", function() { fileInput.click(); });
-dropzone.addEventListener("keydown", function(event) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    fileInput.click();
-  }
-});
-fileInput.addEventListener("change", function() { selectFile(fileInput.files[0]); });
-removeFileButton.addEventListener("click", clearFile);
-resetButton.addEventListener("click", clearFile);
-
-["dragenter", "dragover"].forEach(function(eventName) {
-  dropzone.addEventListener(eventName, function(event) {
-    event.preventDefault();
-    dropzone.classList.add("dragover");
-  });
-});
-["dragleave", "drop"].forEach(function(eventName) {
-  dropzone.addEventListener(eventName, function(event) {
-    event.preventDefault();
-    dropzone.classList.remove("dragover");
-  });
-});
-dropzone.addEventListener("drop", function(event) {
-  selectFile(event.dataTransfer.files[0]);
-});
-
-analyzeButton.addEventListener("click", async function() {
-  if (!selectedFile) return;
-  analyzeButton.disabled = true;
-  cleanButton.disabled = true;
-  setStatus("FIT Datei wird geprüft …", "");
-  try {
-    const response = await sendFile("/api/analyze", false);
-    const data = await response.json();
-    renderAnalysis(data);
-    setStatus("Analyse erfolgreich.", "success");
-  } catch (error) {
-    resetAnalysis();
-    setStatus(error.message, "error");
-  } finally {
-    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-  }
-});
-
-cleanButton.addEventListener("click", async function() {
-  if (!selectedFile || !analysisComplete) return;
-  cleanButton.disabled = true;
-  analyzeButton.disabled = true;
-  setStatus("FIT Datei wird bereinigt und geprüft …", "");
-  try {
-    const response = await sendFile("/api/anonymize", true);
-    const blob = await response.blob();
-    const baseName = selectedFile.name.replace(/\.fit$/i, "");
-    cleanedBlob = blob;
-    cleanedFileName = baseName + "_anonymized.fit";
-    document.getElementById("contributePanel").hidden = false;
-    document.getElementById("sendFitButton").disabled = !document.getElementById("donateConsent").checked;
-    const fileUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = baseName + "_anonymized.fit";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(fileUrl);
-
-    const gps = Number(response.headers.get("X-Removed-Gps-Fields") || 0);
-    const identifiers = Number(response.headers.get("X-Removed-Identifier-Fields") || 0);
-    const metadata = Number(response.headers.get("X-Removed-Metadata-Messages") || 0);
-    const developer = Number(response.headers.get("X-Removed-Developer-Fields") || 0);
-    const summary = "Entfernt: " + gps + " GPS Felder, " + identifiers +
-      " Kennungsfelder, " + metadata + " Metadatennachrichten und " +
-      developer + " Entwicklerfelder. Download gestartet.";
-    setStatus(summary, "success");
-  } catch (error) {
-    setStatus(error.message, "error");
-  } finally {
-    cleanButton.disabled = false;
-    analyzeButton.disabled = !selectedFile || !runtimeAvailable;
-  }
-});
-
-document.getElementById("donateConsent").addEventListener("change", function() {
-  document.getElementById("sendFitButton").disabled = !cleanedBlob || !this.checked;
-});
-document.getElementById("sendFitButton").addEventListener("click", async function() {
-  if (!cleanedBlob || !document.getElementById("donateConsent").checked) return;
-  if (cleanedBlob.size > 2 * 1024 * 1024) {
-    const status = document.getElementById("sendStatus");
-    status.textContent = "Die bereinigte Datei ist größer als 2 MB und kann nicht eingesendet werden.";
-    status.className = "status error";
-    return;
-  }
-  const button = this;
-  const status = document.getElementById("sendStatus");
-  button.disabled = true;
-  status.textContent = "Bereinigte FIT Datei wird übertragen …";
-  status.className = "status";
-  try {
-    const form = new FormData();
-    form.append("file", new File([cleanedBlob], cleanedFileName, { type: "application/octet-stream" }));
-    form.append("cleaned", "true");
-    form.append("sport", document.getElementById("donateSport").value);
-    form.append("comment", document.getElementById("donateComment").value.trim());
-    form.append("name", document.getElementById("donateName").value.trim());
-    form.append("contact", document.getElementById("donateContact").value.trim());
-    form.append("website", document.getElementById("donateWebsite").value);
-    const response = await fetch(FIT_SUBMISSION_API, { method: "POST", body: form });
-    const result = await response.json().catch(function() { return {}; });
-    if (!response.ok) throw new Error(result.message || result.error || ("HTTP " + response.status));
-    status.textContent = "Danke. Die bereinigte FIT Datei wurde an die SurfsApp Entwicklung übermittelt.";
-    status.className = "status success";
-    document.getElementById("donateConsent").checked = false;
-    document.getElementById("sendStatus").setAttribute("data-submission-id", result.id || "");
-  } catch (error) {
-    status.textContent = error.message || "Die FIT Datei konnte nicht übermittelt werden.";
-    status.className = "status error";
-    button.disabled = false;
-  }
-});
+<script src="cleaner-flow.js?v=1.1.0"></script>
 </script>
 </body>
 </html>

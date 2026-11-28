@@ -5,144 +5,88 @@ const { chromium } = require("playwright");
 (async function run() {
   let browser;
   let page;
-
   try {
     browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
     page = await browser.newPage({ acceptDownloads: true, locale: "de-DE" });
+    page.on("pageerror", error => console.error("[browser page error]", error.message));
+    page.on("console", message => { if (message.type() === "error") console.error("[browser console]", message.text()); });
+    page.on("requestfailed", request => console.error("[request failed]", request.url(), request.failure()?.errorText || ""));
+    page.on("response", response => { if (response.status() >= 400) console.error("[HTTP error]", response.status(), response.url()); });
 
-    page.on("pageerror", error => {
-      console.error("[browser page error]", error.message);
-    });
-    page.on("console", message => {
-      if (message.type() === "error") console.error("[browser console]", message.text());
-    });
-    page.on("requestfailed", request => {
-      console.error("[request failed]", request.url(), request.failure()?.errorText || "");
-    });
-    page.on("response", response => {
-      if (response.status() >= 400) {
-        console.error("[HTTP error]", response.status(), response.url());
-      }
-    });
-
-    const response = await page.goto(
-      "http://127.0.0.1:4173/Fit-Privacy-Cleaner/",
-      { waitUntil: "networkidle", timeout: 60000 }
-    );
+    const response = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/", { waitUntil: "networkidle", timeout: 60000 });
     assert.ok(response && response.ok(), "Cleaner page did not load.");
-
-    await page.waitForFunction(() => {
-      const element = document.getElementById("runtimeStatus");
-      return element && (
-        element.classList.contains("success") ||
-        element.classList.contains("error")
-      );
-    }, null, { timeout: 60000 });
-
-    const runtimeStatus = await page.locator("#runtimeStatus").textContent();
-    console.log("Runtime status:", runtimeStatus);
-    assert.match(runtimeStatus, /FIT Prozessor bereit/, "German FIT processor did not initialize.");
-    assert.equal(await page.locator("#removeDevice").isVisible(), true, "German device data selection is missing.");
-    assert.equal(await page.locator("#removeGps").isVisible(), true, "German GPS selection is missing.");
-    assert.equal(await page.locator("#removeGps").isChecked(), false, "GPS removal should be optional by default.");
-
-    await Promise.all([
-      page.waitForURL(/index\.en\.html/),
-      page.locator('.language-switch a[href$="index.en.html"]').click()
-    ]);
-    await page.waitForFunction(() => {
-      const element = document.getElementById("runtimeStatus");
-      return document.documentElement.lang === "en" &&
-        element && element.classList.contains("success");
-    }, null, { timeout: 60000 });
-
-    const englishRuntimeStatus = await page.locator("#runtimeStatus").textContent();
-    assert.match(englishRuntimeStatus, /FIT processor ready/, "English FIT processor did not initialize.");
-    assert.equal(await page.locator("#upload-title").textContent(), "Select FIT file", "English interface did not load.");
-
-    const version = await page.locator("#appVersion").textContent();
-    const build = await page.locator("#appBuild").textContent();
-    console.log("Application version:", version, "Build:", build);
-    assert.equal(version, "1.0.4", "Unexpected application version.");
+    await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
+    assert.match(await page.locator("#runtimeStatus").textContent(), /FIT Prozessor bereit/);
+    assert.equal(await page.locator("#removeDevice").isVisible(), true);
+    assert.equal(await page.locator("#removeGps").isVisible(), true);
+    assert.match(await page.locator("#privacyPreviewText").textContent(), /ausgewählten Bereiche/);
+    assert.match(await page.locator(".always-strip").textContent(), /Immer entfernt/);
+    assert.equal(await page.locator("#removeGps").isChecked(), false);
 
     const fixture = process.env.FIT_TEST_FIXTURE;
     assert.ok(fixture && require("node:fs").existsSync(fixture), "Generated FIT fixture is missing.");
+    await Promise.all([
+      page.waitForURL(/release-1\.1\.0\/index\.en\.html/),
+      page.locator('.language-switch a[href$="index.en.html"]').click()
+    ]);
+    await page.waitForFunction(() => document.documentElement.lang === "en" && document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
+    assert.equal(await page.locator("#upload-title").textContent(), "Select FIT file");
+    assert.equal(await page.locator("#appVersion").textContent(), "1.1.0");
 
     await page.locator("#fileInput").setInputFiles(path.resolve(fixture));
-    await page.waitForFunction(
-      () => document.getElementById("status")?.textContent?.trim() === "File selected.",
-      null,
-      { timeout: 10000 }
-    );
-    assert.equal(
-      await page.locator("#results").evaluate(element => element.classList.contains("visible")),
-      false,
-      "Selecting a FIT file must not start analysis automatically."
-    );
-    assert.equal(await page.locator("#analyzeButton").isEnabled(), true, "The explicit analysis button should be enabled.");
-    assert.equal(await page.locator("#removeDevice").isVisible(), true, "English device data selection is missing.");
-    assert.equal(await page.locator("#removeGps").isVisible(), true, "English GPS selection is missing.");
+    await page.waitForFunction(() => document.getElementById("status")?.textContent?.includes("File selected"), null, { timeout: 10000 });
+    assert.equal(await page.locator("#results").evaluate(element => element.classList.contains("visible")), false, "Selecting a FIT file must not start analysis.");
+    assert.equal(await page.locator("#analyzeButton").isEnabled(), true);
     await page.locator("#removeGps").check();
-    assert.equal(await page.locator("#removeGps").isChecked(), true, "GPS removal option is not selectable.");
+    assert.equal(await page.locator("#removeGps").isChecked(), true);
+    assert.match(await page.locator("#privacyPreviewList").textContent(), /Location and route data/);
     await page.locator("#removeGps").uncheck();
 
     await page.locator("#analyzeButton").click();
-    await page.waitForFunction(
-      () => {
-        const status = document.getElementById("status");
-        return status && (
-          status.classList.contains("success") ||
-          status.classList.contains("error")
-        );
-      },
-      null,
-      { timeout: 75000 }
-    );
+    await page.waitForFunction(() => document.getElementById("results")?.classList.contains("visible"), null, { timeout: 75000 });
+    assert.match(await page.locator("#analysisExplanation").textContent(), /What this analysis means/);
+    assert.match(await page.locator("#analysisExplanation").textContent(), /Training data found/);
+    assert.equal(await page.locator("#cleanButton").isEnabled(), true);
 
-    const analyzeStatus = await page.locator("#status").textContent();
-    console.log("Analyze status:", analyzeStatus);
-    assert.match(analyzeStatus, /Analysis successful/, "Browser FIT analysis failed.");
-
-    const statistics = await page.locator("#stats .stat strong").allTextContents();
-    const statisticLabels = await page.locator("#stats .stat span").allTextContents();
-    assert.equal(statistics[0], "1", "Expected one FIT record in browser analysis.");
-    assert.equal(statisticLabels[0], "Records", "FIT analysis labels were not translated to English.");
-    console.log("FIT analysis result:", statistics.join(", "));
+    await page.locator("#cleanButton").click();
+    await page.waitForFunction(() => document.getElementById("cleanedPanel") && !document.getElementById("cleanedPanel").hidden, null, { timeout: 75000 });
+    assert.match(await page.locator("#cleanSummaryText").textContent(), /Nothing has been uploaded/);
+    assert.equal(await page.locator("#downloadButton").isEnabled(), true);
+    assert.equal(await page.locator("#donateSport").isVisible(), true);
+    assert.equal(await page.locator("#sendFitButton").isDisabled(), true);
+    assert.match(await page.locator("#donateForm").textContent(), /at least one is needed for follow-up/);
 
     const downloadPromise = page.waitForEvent("download", { timeout: 30000 });
-    await page.locator("#cleanButton").click();
+    await page.locator("#downloadButton").click();
     const download = await downloadPromise;
-    console.log("Cleaned FIT download:", download.suggestedFilename());
     assert.match(download.suggestedFilename(), /_anonymized\.fit$/);
 
-    const versionedPage = await page.goto(
-      "http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.0.4/?lang=de",
-      { waitUntil: "networkidle", timeout: 60000 }
-    );
-    assert.ok(versionedPage && versionedPage.ok(), "Versioned Cleaner page did not load.");
-    await page.waitForFunction(
-      () => document.getElementById("runtimeStatus")?.classList.contains("success"),
-      null,
-      { timeout: 60000 }
-    );
-    await page.waitForFunction(
-      () => document.getElementById("appBuild")?.textContent?.includes("Run"),
-      null,
-      { timeout: 15000 }
-    );
-    assert.equal(await page.locator("#appVersion").textContent(), "1.0.4", "Versioned page did not load version 1.0.4.");
-    assert.equal(await page.locator("#removeGps").isVisible(), true, "Versioned page is missing GPS selection.");
-    assert.equal(await page.locator("#analyzeButton").isDisabled(), true, "Versioned page must wait for file selection.");
+    await page.route("https://garmin-abruf.andigreen.workers.dev/api/fit-submissions", async route => {
+      const body = route.request().postData() || "";
+      assert.match(body, /Test User/);
+      assert.match(body, /Windsurfen/);
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "smoke-test" }) });
+    });
+    await page.locator("#donateSport").selectOption("Windsurfen");
+    await page.locator("#donateName").fill("Test User");
+    await page.locator("#donateContact").fill("test@example.com");
+    await page.locator("#donateConsent").check();
+    await page.locator("#sendFitButton").click();
+    await page.waitForFunction(() => document.getElementById("sendStatus")?.classList.contains("success"), null, { timeout: 15000 });
+    assert.match(await page.locator("#sendStatus").textContent(), /sent to SurfsApp development/);
 
-    console.log("Browser end to end FIT smoke test passed.");
+    const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.1.0/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
+    assert.ok(versioned && versioned.ok(), "Version 1.1.0 page did not load.");
+    await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
+    await page.waitForFunction(() => document.getElementById("appBuild")?.textContent?.includes("Run"), null, { timeout: 15000 });
+    assert.equal(await page.locator("#appVersion").textContent(), "1.1.0");
+    assert.equal(await page.locator("#removeGps").isVisible(), true);
+    assert.equal(await page.locator("#analyzeButton").isDisabled(), true);
+    console.log("FIT Privacy Cleaner 1.1.0 browser end-to-end tests passed.");
   } catch (error) {
     if (page) {
-      await page.screenshot({
-        path: "artifacts/browser-smoke-failure.png",
-        fullPage: true
-      }).catch(() => {});
-      const status = await page.locator("#runtimeStatus").textContent().catch(() => "unavailable");
-      console.error("Runtime status at failure:", status);
+      await page.screenshot({ path: "artifacts/browser-smoke-failure.png", fullPage: true }).catch(() => {});
+      console.error("Runtime status at failure:", await page.locator("#runtimeStatus").textContent().catch(() => "unavailable"));
     }
     console.error(error);
     process.exitCode = 1;
