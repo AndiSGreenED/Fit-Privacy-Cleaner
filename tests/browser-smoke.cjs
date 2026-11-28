@@ -101,11 +101,12 @@ const { chromium } = require("playwright");
     await page.waitForFunction(() => document.getElementById("sendStatus")?.classList.contains("success"), null, { timeout: 15000 });
     assert.match(await page.locator("#sendStatus").textContent(), /sent to SurfsApp development/);
 
+    const cleanerScriptPromise = page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/cleaner-flow.js?v="), { timeout: 15000 });
+    const blazorScriptPromise = page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/_framework/blazor.webassembly.js"), { timeout: 15000 });
     const versioned = await page.goto("http://127.0.0.1:4173/Fit-Privacy-Cleaner/release-1.2.1/?lang=de", { waitUntil: "networkidle", timeout: 60000 });
     assert.ok(versioned && versioned.ok(), "Version 1.2.1 page did not load.");
-    const cleanerScriptResponse = await page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/cleaner-flow.js?v="), { timeout: 15000 });
+    const [cleanerScriptResponse, blazorScriptResponse] = await Promise.all([cleanerScriptPromise, blazorScriptPromise]);
     assert.equal(cleanerScriptResponse.status(), 200, "Versioned page must load the shared cleaner script from the site root.");
-    const blazorScriptResponse = await page.waitForResponse(response => response.url().includes("/Fit-Privacy-Cleaner/_framework/blazor.webassembly.js"), { timeout: 15000 });
     assert.equal(blazorScriptResponse.status(), 200, "Versioned page must load Blazor from the site root.");
     await page.waitForFunction(() => document.getElementById("runtimeStatus")?.classList.contains("success"), null, { timeout: 60000 });
     await page.waitForFunction(() => document.getElementById("appBuild")?.textContent?.includes("Run"), null, { timeout: 15000 });
