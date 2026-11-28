@@ -39,7 +39,8 @@ const { chromium } = require("playwright");
     assert.equal(await page.locator("#analyzeButton").isEnabled(), true);
     await page.locator("#removeGps").check();
     assert.equal(await page.locator("#removeGps").isChecked(), true);
-    assert.match(await page.locator("#privacyPreviewList").textContent(), /Location and route data/);
+    assert.match(await page.locator("#privacyPreviewList").textContent(), /GPS coordinates/);
+    assert.match(await page.locator("#privacySection").textContent(), /Location and route data/);
     await page.locator("#removeGps").uncheck();
 
     await page.locator("#analyzeButton").click();
