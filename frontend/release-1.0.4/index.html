@@ -212,7 +212,7 @@ footer{display:flex;justify-content:space-between;gap:18px;color:var(--soft);fon
   </section>
 
   <footer>
-    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.0.4</span> · Build <span id="appBuild">wird geladen</span></span>
+    <span>FIT Privacy Cleaner · Version <span id="appVersion">1.0.4</span> · Build <span id="appBuild">Archivierter Stand</span></span>
     <span>Die Originaldatei bleibt unverändert.</span>
   </footer>
 </main>
@@ -234,8 +234,6 @@ const results = document.getElementById("results");
 const statsElement = document.getElementById("stats");
 const checksElement = document.getElementById("checks");
 const runtimeStatusElement = document.getElementById("runtimeStatus");
-const appVersionElement = document.getElementById("appVersion");
-const appBuildElement = document.getElementById("appBuild");
 
 const FIT_SUBMISSION_API = "https://garmin-abruf.andigreen.workers.dev/api/fit-submissions";
 let dotNetInterop = null;
@@ -355,20 +353,7 @@ async function startFitRuntime() {
   }
 }
 
-async function loadVersion() {
-  try {
-    const response = await fetch("/Fit-Privacy-Cleaner/version.json?release=1.0.4", { cache: "no-store" });
-    if (!response.ok) throw new Error("Version metadata not available");
-    const version = await response.json();
-    appVersionElement.textContent = version.version || "unbekannt";
-    appBuildElement.textContent = (version.build || "unbekannt") +
-      (version.run ? " · Run " + version.run : "");
-  } catch (_) {
-    appBuildElement.textContent = "Build unbekannt";
-  }
-}
 
-loadVersion();
 
 function resetAnalysis() {
   analysisComplete = false;
